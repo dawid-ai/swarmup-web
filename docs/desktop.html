@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1015">
+<title>Desktop app · SwarmUp</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<header class="top">
+<a class="brand" href="../index.html"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect width="10" height="10" fill="#E46FB3"/><rect x="12" width="10" height="10" fill="#E8875B"/><rect y="12" width="10" height="10" fill="#4FC3D9"/><rect x="12" y="12" width="10" height="10" fill="#A393FF"/></svg>SwarmUp</a>
+<nav>
+<a href="../index.html">Home</a>
+<a href="../download.html">Download</a>
+<a href="../install.html">Install</a>
+<a href="../docs/index.html" aria-current="page">Docs</a>
+<a href="../changelog.html">Changelog</a>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</nav>
+<a class="button small" href="../download.html">Download</a>
+</header>
+<main class="docs">
+<nav class="side" aria-label="Docs">
+<a class="site" href="index.html">Docs</a>
+<ul><li><a href="index.html">Overview</a></li></ul>
+<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html" class="current" aria-current="page">Desktop app</a></li><li><a href="swarmup-rename.html">SwarmUp rename: name inventory</a></li></ul>
+</nav>
+<article class="prose">
+<h1 id="desktop-app"><a class="anchor" href="#desktop-app" aria-hidden="true">#</a>Desktop app</h1>
+<p>The desktop app is the human&#39;s control room on top of <code>swarmupd</code>: the inbox, the board, task details
+with every action, agents and their runs, run logs, votes and channels.</p>
+<h2 id="install-and-updates"><a class="anchor" href="#install-and-updates" aria-hidden="true">#</a>Install and updates</h2>
+<p>On Windows, <code>SwarmUp-Setup.exe</code> from GitHub Releases installs the app for your user (under
+<code>%LOCALAPPDATA%\Programs\SwarmUp</code> unless you pick another folder). The app carries swarmupd and the
+<code>swarmup</code> command as bundles it runs with its own executable as Node, so no separate Node.js is
+needed:</p>
+<ul>
+<li><code>resources\app\</code>: <code>main.mjs</code> (the app), <code>swarmupd.mjs</code>, <code>swarmup.mjs</code>, the UI.</li>
+<li><code>resources\bin\</code>: <code>swarmup.cmd</code> for PowerShell and cmd, and <code>swarmup</code> for Git Bash, plus the
+<code>ops.cmd</code> and <code>ops</code> aliases, which print a notice on stderr until they go in 0.4. The installer adds
+this folder to your user PATH when <strong>Add the swarmup command to my PATH</strong> is checked (the default);
+uninstalling removes it. If you edited PATH at or before that entry since installing, uninstalling
+leaves PATH as it is, so remove the entry yourself. Agent runs always get it first on their PATH
+from swarmupd.</li>
+</ul>
+<p>The app checks GitHub Releases a minute after it starts and every 4 hours, and downloads a new
+version in the background. It installs on its own once no agent run is live and no window is open
+(the app sits in the tray): it stops swarmupd, which runs from the files the installer replaces,
+installs silently and starts again in the tray. <strong>Settings &gt; Updates</strong>, the banner and the tray&#39;s
+<strong>Restart to update</strong> install at once; with runs live they ask first: the runs keep going and the
+new swarmupd adopts them, but their <code>swarmup</code> commands fail while the files are replaced. A development
+build run from a checkout never updates itself.</p>
+<h2 id="run-from-a-checkout"><a class="anchor" href="#run-from-a-checkout" aria-hidden="true">#</a>Run from a checkout</h2>
+<p>From the engine checkout:</p>
+<pre><code class="language-bash">npm install
+npm run desktop   # builds the core, swarmupd and the UI, then opens the app
+</code></pre>
+<p>On the first start, when the user config has no <code>me</code>, the app asks for your id (default
+<code>human:&lt;OS user name&gt;</code>) and the data roots to load (default: the root it was started in), then
+writes the user config (<code>%APPDATA%\agent-ops\config.yml</code>, <code>~/.config/agent-ops/config.yml</code> or
+<code>SWARMUP_CONFIG</code>) and starts <code>swarmupd</code>. An existing config keeps everything, comments and roots
+included, and only gains a missing <code>me</code>. If a <code>swarmupd</code> that runs no agents is
+already up, the app restarts it to load the config; one that runs agents keeps going, and the app
+says to restart it. From a terminal, <code>swarmup init --user [--me human:NAME] [--root DIR]...</code> (or <code>swarmup setup</code>) does the
+same.</p>
+<p>The app starts <code>swarmupd</code> when none runs and connects to the one that does. A <code>swarmupd</code> started before
+the engine was rebuilt runs an older build (its <code>GET /api/health</code> <code>build</code> differs from the one on
+disk): the app restarts it at once when no run is live, and otherwise shows a banner and tries
+again every 30 s, so no agent is cut off. Closing the window leaves <code>swarmupd</code> and every agent run
+going; stop them with <code>swarmup daemon stop</code> (add <code>--kill-runs</code> to stop the runs too; a <code>swarmupd</code>
+whose runs cannot outlive it refuses a stop without it while runs are live).</p>
+<h2 id="background-service-and-tray"><a class="anchor" href="#background-service-and-tray" aria-hidden="true">#</a>Background service and tray</h2>
+<p><strong>Settings &gt; Background service (swarmupd)</strong> shows whether <code>swarmupd</code> runs, is paused or is stopped, with
+its live runs; which <code>swarmupd</code> runs (pid, port, version and start time); and its build (when its code
+was built), flagged when it is older than the app installed now. It has these controls:</p>
+<ul>
+<li><strong>Start</strong>, <strong>Stop</strong> and <strong>Restart</strong>. Stop and Restart never stop a run, on Windows too: live runs
+keep going and the next <code>swarmupd</code> adopts them. A restart confirms itself with the new pid and start
+time, or says why it did not happen: the old <code>swarmupd</code> did not stop in time, or you kept live runs
+that cannot outlive it. A restart loads the code <code>swarmupd</code> starts from: the installed app&#39;s <code>swarmupd</code>
+gets a change merged into the engine repo only with a new build of the app (see
+<a href="supervisor.html#start-and-stop">Start and stop</a>). While <code>swarmupd</code> is stopped, the runs&#39; own <code>swarmup</code> calls
+that go through it fail until it is back. A <code>swarmupd</code> that reports runs cannot outlive it
+(<code>runs_outlive: false</code> in <code>GET /api/health</code>) ends its runs when it stops; with runs live, Stop
+and Restart (here and in the tray) then ask in a system dialog before they end them, and ending
+a run releases its claim. To let runs finish instead, cancel, pause new runs and stop when none
+are live.</li>
+<li><strong>Pause new runs</strong> and <strong>Resume new runs</strong>. While paused, no wake, schedule, <strong>Run now</strong> or
+<code>swarmup launch</code> starts a run; helper runs of live runs still start, live runs finish, and sync,
+notifications and the API keep working. The pause is <code>opsd.paused: true</code> in the user config, so
+it lasts across restarts until you resume. From a terminal: <code>swarmup daemon pause</code> and
+<code>swarmup daemon resume</code>.</li>
+<li><strong>Start swarmupd</strong>: <strong>When I open the app</strong> (the default) or <strong>When I sign in to Windows</strong>. Sign-in
+adds the app to your Windows sign-in apps (the per-user Run key, through Electron&#39;s login-item
+API) with <code>--background</code>: it starts in the tray with no window and starts <code>swarmupd</code>. Windows lists
+it under <strong>Task Manager &gt; Startup apps</strong>, where you can also turn it off. The entry is written
+only when you pick the option, never in screenshot mode. It starts <code>swarmupd</code> in the folder you
+picked it from (<code>--ops-cwd</code>). The app reads the entry from the registry by its name,
+<code>SwarmUp</code>, so it still finds one made from a moved or replaced checkout: the card then shows
+the command the entry runs, with <strong>Start this app instead</strong> and <strong>Remove the entry</strong>. An entry
+turned off in Task Manager shows as off. Other systems get this later.</li>
+<li><strong>Notify me when I&#39;m needed</strong>: a Windows notification for each new question, review or vote
+addressed to you; clicking it opens the task. Off is <code>desktop.notify: false</code> in the user config.</li>
+</ul>
+<p>While the app runs it has a tray icon (the notification area, bottom right of the taskbar). Its
+colour is the state: green running, amber paused, grey stopped, with a blue dot while something
+waits for you. Its tooltip and the top of its menu show <code>swarmupd</code>&#39;s pid, start time, version and
+build, and flag a build older than the app. Left-click opens the window; right-click offers the
+same controls as the card (<strong>Restart swarmupd</strong> works like <strong>Restart</strong>, and a notification shows the
+new pid and start time or why it did not restart), the items that need you, the notification
+switch, <strong>Quit SwarmUp (swarmupd keeps running)</strong> and <strong>Quit and stop swarmupd</strong>. Closing the window
+keeps the tray icon. Quit closes the app only: <code>swarmupd</code> is a process of its own and keeps running
+agents, and opening the app again connects to the same <code>swarmupd</code>. Quit and stop also stops <code>swarmupd</code>,
+like <strong>Stop</strong>; if the stop fails or you cancel it, the app stays open. One app runs per person:
+starting it again shows the open one.</p>
+<h2 id="views"><a class="anchor" href="#views" aria-hidden="true">#</a>Views</h2>
+<table>
+<thead>
+<tr>
+<th>View</th>
+<th>What you do there</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Inbox</strong></td>
+<td>What waits for you, grouped: questions to answer, reviews, decisions, tasks assigned or delegated to you, mentions; <strong>Chat with the PM</strong> opens Chat</td>
+</tr>
+<tr>
+<td><strong>Board</strong></td>
+<td>Tasks by status; drag a card to another column to change its status (Working, Blocked and Review ask for what they need); swimlanes by agent, project or priority; ideas stay hidden until you turn on <strong>Ideas</strong></td>
+</tr>
+<tr>
+<td><strong>Tasks</strong></td>
+<td>Search and filter by status, project, owner, role, provider, priority, type and label; sort by priority or update; due dates</td>
+</tr>
+<tr>
+<td><strong>Findings</strong></td>
+<td>Bugs, risks and ideas agents filed with <code>swarmup finding</code>: accept as a task or bug with a priority and owner, set aside as an idea, or park</td>
+</tr>
+<tr>
+<td><strong>Standups</strong></td>
+<td>Per agent and person: done, in review, working on, blocked, runs and tokens, from the task history; <code>#standup</code> posts</td>
+</tr>
+<tr>
+<td><strong>Activity</strong></td>
+<td>Every task event and channel post across roots, newest first by day; filter by who, project and kind (work, reviews, talk, runs, findings and notes)</td>
+</tr>
+<tr>
+<td><strong>Reports</strong></td>
+<td>A week, 30 or 90 days: tasks opened, closed, parked, open and blocked per project; runs, minutes and tokens per provider and agent; decisions taken; channel posts</td>
+</tr>
+<tr>
+<td><strong>Replay</strong></td>
+<td>Play a project&#39;s history from <code>GET /api/timeline</code> over a day, week, 30 or 90 days or custom dates as a 15, 30 or 60 s clip: play, pause, scrub, speed (0.25× to 4×), loop; <strong>Space</strong> plays, arrow keys step 1 s; scenes <strong>Events</strong>, <strong>Counters</strong>, <strong>Metro map</strong> (each task a line that branches off the main line at claim, review rounds as stations, human decisions as interchanges, parked ideas as stubs; time runs down on 9:16), <strong>Wrapped</strong> (stat cards from <code>wrapped=1</code>, the same figures as <code>swarmup wrapped</code>) and <strong>Review rally</strong> (pick a task with review rounds in the window, shown as <code>root/id</code> when two roots share the id; its rounds play as a fixed 10 s rally between author and reviewer, each return labeled with its verdict, ending on the last one); <strong>Save frame</strong> and <strong>Save N cards</strong> write 1920 x 1080 PNGs to a folder you pick, never overwriting a file; <strong>Record MP4</strong> renders the whole clip offscreen at 60 fps as H.264 in 16:9 (1920 x 1080), 1:1 (1080 x 1080) or 9:16 (1080 x 1920), with progress and <strong>Cancel</strong>, into a folder you pick first</td>
+</tr>
+<tr>
+<td>Task panel</td>
+<td>Status and priority menus, owner as a tag, the conversation oldest first with each answer linked to its question, comments with <code>@</code> mentions and <strong>Notify</strong>, delegate with a due date and time, run an agent</td>
+</tr>
+<tr>
+<td><strong>Agents</strong></td>
+<td>What starts runs (wake, Run agent, schedules), <strong>Create role</strong>, each provider&#39;s usage and pause, work waiting with why, machines, agents by provider with live runs and backlog, agents ready without a role file</td>
+</tr>
+<tr>
+<td><strong>Runs</strong></td>
+<td>Every run with its log, followed live; readable or <strong>raw</strong>; its processes and <strong>Kill leftovers</strong>; <strong>Start a run</strong></td>
+</tr>
+<tr>
+<td><strong>Schedules</strong></td>
+<td>Recurring runs (swarmupd&#39;s cron): add, edit, pause, <strong>Run now</strong>, delete; templates for standups, inbox sweeps, nightly QA</td>
+</tr>
+<tr>
+<td><strong>Repeating</strong></td>
+<td>Repeating tasks: a template that creates a task once, daily, weekly, on chosen weekdays, monthly, yearly, or when a task or all its subtasks close; add, edit, pause, <strong>Run now</strong>, delete; state, next slot, last task</td>
+</tr>
+<tr>
+<td><strong>Chat</strong></td>
+<td>One conversation with the orchestrator: replies stream in, what it changed shows as task links, <code>@*:orchestrator</code> posts from channels join it; <strong>Stop</strong>, <strong>New conversation</strong> (see <a href="supervisor.html#chat">the supervisor</a>)</td>
+</tr>
+<tr>
+<td><strong>Channels</strong></td>
+<td><strong>New channel</strong>, read and post; <code>@id</code> in a message puts it in that inbox</td>
+</tr>
+<tr>
+<td><strong>Decisions</strong></td>
+<td>Tallies and ballots; decide ties and votes without quorum</td>
+</tr>
+<tr>
+<td><strong>Knowledge</strong></td>
+<td>Learn notes from <code>kb/</code> by topic; search with the same matching as <code>swarmup kb</code>; links to the task a note came from</td>
+</tr>
+<tr>
+<td><strong>Settings</strong></td>
+<td>swarmupd status and restart, health checks (same as <code>swarmup doctor</code>), data roots, the Master Repo and which project roots mirror into it, webhook notifications, run limits, providers, roles, which agents wake on work</td>
+</tr>
+</tbody></table>
+<p>Agents and people are color-coded everywhere: the tile color and mark show the provider (Claude,
+Codex, a person), the corner badge and the role name&#39;s color show the role (engineer, QA, PM,
+docs). Priorities show as <strong>Urgent</strong>, <strong>Medium</strong>, <strong>Standard</strong> and <strong>Low</strong> for <code>p0</code> to <code>p3</code>; agents
+and the files keep <code>p0</code> to <code>p3</code>. A due date alone means the end of that day; add a time in the
+picker for an exact one.</p>
+<p>The status menu and the board offer only moves the protocol has one action for: <strong>To do</strong>
+releases, unblocks, reopens or requests changes; <strong>Working</strong> starts work (you take it, or an agent
+run starts); <strong>Blocked</strong> asks why and on whom or what; <strong>Review</strong> asks for the reviewer; <strong>Done</strong>
+closes; <strong>Parked</strong> asks why. Other moves are dimmed with the reason. Every move, from the status
+menu, a board drop or the palette, opens a dialog and changes nothing until you click its button
+there, so no stray pick, drop or Enter closes or reopens a task in your name.</p>
+<p>Text that agents and people write shows as Markdown wherever it appears: the task description,
+events and checkpoint in the task panel, Inbox messages, questions, review requests and triage
+questions, Activity, Decisions (question, context, ballot reasons, outcome), Chat, Channels,
+Standups, Knowledge, the Agents view&#39;s waiting list, schedule prompts and the task description of
+each repeating task. Headings, lists, code and links render; task ids are links with a status dot
+and <code>@id</code> mentions are colored pills. Titles stay one line. In lists (Inbox, Activity, Agents,
+Schedules, Repeating) long text shows its first lines; click it or <strong>Show more</strong> to expand it, and
+again to fold it. See
+<a href="protocol.html#event-text-is-markdown">event text</a> for how agents write it.</p>
+<p><strong>Chat with the PM</strong>, at the top of the sidebar and in the Inbox, opens <strong>Chat</strong>: one
+conversation with the project&#39;s PM (the orchestrator), with no agent to pick. An answer never
+closes it, and it survives a restart of the app. A task of type <code>question</code> that an agent answered
+keeps its reply box: <strong>Reply</strong> reopens it with your text as the next round, and its owner answers
+again.</p>
+<p><strong>Settings</strong> writes the user config with its comments kept, and swarmupd applies the change at once.
+Through swarmupd&#39;s API it changes limits, roles, a provider&#39;s <code>model</code>, <code>max_live</code>, <code>pause_at</code> and
+<code>paused</code>, removes a provider or resets a seeded one to default, adds, edits and removes agents
+(<code>wake</code>, <code>budget</code>, <code>model</code>), sync and roots only.</p>
+<ul>
+<li><strong>Providers.</strong> <code>swarmup setup</code>, the app&#39;s first start and swarmupd&#39;s first start write the default
+providers (<code>claude</code>, <code>codex</code>) into the user config; from then on the config is the only source,
+and every provider is edited the same way. Each row shows whether its program is on swarmupd&#39;s
+PATH, the agents that run on it, and its model, most live runs, pause-at share and pause
+switch. <strong>Add provider</strong> and <strong>Edit</strong> take the name, the program, its arguments and the
+environment variables its runs must not see. Electron&#39;s main process, not swarmupd, writes those,
+after a system dialog shows the exact command line; the page and anyone holding the API token
+cannot change which program a run starts. <strong>Remove</strong> works for every provider and names the
+agents that use it first; their runs then do not start and say why. <strong>Reset to default</strong>
+restores a seeded provider&#39;s entry, and <strong>Add back</strong> returns a removed one. A paused provider
+starts no new runs; live runs go on.</li>
+<li><strong>Agents</strong> (the Agents view). <strong>Add agent</strong> takes a provider from Settings, a role, a model and
+the Wake switch; an agent whose provider does not exist is refused. Each card edits Wake, the
+model and the budget, opens or creates the role file <code>agents/&lt;provider&gt;-&lt;role&gt;.md</code>, and removes
+an agent the config lists (its role file stays). A card whose provider was removed says
+<strong>no provider</strong>.</li>
+<li><strong>Role files.</strong> <strong>Create role</strong> and <strong>Edit</strong> write <code>agents/&lt;provider&gt;-&lt;role&gt;.md</code> in a data root:
+name, description, instructions (the body), <code>kb</code> topics and <code>files</code> to read first, a writing
+<code>style</code>, a budget and the task types it takes. swarmupd repeats the reading list and style in every
+run&#39;s prompt. The app never sets <code>tools</code>; edits keep other frontmatter. A role file&#39;s <code>model</code>
+sets the run&#39;s model unless the agent&#39;s own <code>model</code> in Settings overrides it; <code>mcp</code> is kept as
+metadata only.
+Agents without a role file still run with the built-in prompt.</li>
+</ul>
+<p><strong>Answer and Comment.</strong> While a task waits on you, <strong>Answer</strong> closes the question and puts the
+task back to to do, so the agent goes on; <strong>Comment</strong> adds a note and the task keeps waiting.
+Ctrl+Enter sends the highlighted button: <strong>Answer</strong> while the task waits on you, else <strong>Comment</strong>.</p>
+<p>The window updates when <code>swarmupd</code> reports a change (Server-Sent Events): at once after a write
+through the app, and within 3 seconds after an agent writes from the CLI. A message you send shows
+in the open task at once; an item you handle in the inbox leaves with a confirmation that links to
+the task. The app shows a desktop notification for each new question, review, decision or mention
+addressed to you.</p>
+<p><strong>Saved views.</strong> Board and Tasks share one filter bar. <strong>Save view</strong> names the current filters (and the board&#39;s lanes) as a view under <strong>Saved views</strong> in the sidebar. Views are stored in the app on this machine, never in a data root.</p>
+<p><strong>Search.</strong> The box under <strong>New task</strong> (Ctrl+F from anywhere) searches every root: tasks by id (<code>AO-0047</code> or <code>47</code>), title, description and every comment, answer and verdict in their threads, plus learn notes, channel posts and votes. Every word must match; <code>&quot;quoted words&quot;</code> match together. Filters narrow it: <code>agent:</code> (an owner, author or anyone who acted on the item; a full id, a runtime such as <code>codex</code>, a role such as <code>qa</code>, or a name such as <code>dawid</code>), <code>status:</code>, <code>project:</code>, <code>type:</code>, <code>priority:</code>, <code>root:</code>, <code>is:open</code> or <code>is:closed</code>, and <code>in:tasks</code>, <code>in:notes</code>, <code>in:posts</code> or <code>in:votes</code>. Results drop down as you type; arrow keys and Enter open one, and Enter on the query opens <strong>Search</strong> with every result, grouped by kind. The same search is <code>GET /api/search?q=...</code>, which answers <code>{ hits, partial }</code>. Each request has a fixed work budget (file system calls and bytes read), so a search never blocks <code>swarmupd</code> on a large store; when a request reaches it, <code>partial</code> is <code>true</code> and the app says it searched part of the store. Each kind in each root gets a share of the budget, and <code>root:</code> skips the other roots before any work. Items read once stay cached, and each request picks up each folder where the one before it stopped, so searching again covers more; an item too large for a whole share is skipped.</p>
+<p><strong>Voice input.</strong> Every composer (New task, comments, answers, channel posts, standups) has a
+microphone button at its top right. Click it to start and click again to stop, or hold it and
+release to stop; the text goes in at the cursor, or replaces the selection. Recordings stop after
+five minutes. Turn it on in <strong>Settings &gt; Voice input</strong>; it is off by default and then records
+nothing.</p>
+<ul>
+<li><strong>On this PC (whisper.cpp).</strong> Pick <code>whisper-cli.exe</code> from the
+<a href="https://github.com/ggml-org/whisper.cpp/releases">whisper.cpp releases</a> and a model file such
+as <code>ggml-base.bin</code> from the <a href="https://huggingface.co/ggerganov/whisper.cpp/tree/main">model list</a>.
+Both are picked in a system file dialog; the page cannot name the program. Audio never leaves
+the PC: the main process writes the recording to a temporary folder, runs whisper.cpp on it, and
+deletes the folder.</li>
+<li><strong>OpenAI.</strong> Sends each recording to OpenAI&#39;s transcription API (<code>gpt-4o-mini-transcribe</code>, or
+<code>desktop.voice.cloud_model</code> in the user config) with the key in <code>OPENAI_API_KEY</code> from the app&#39;s
+environment. The app never stores the key. Turning it on asks in a system dialog first.</li>
+</ul>
+<p>The settings live under <code>desktop.voice</code> in the user config: <code>engine</code> (<code>off</code>, <code>local</code> or <code>cloud</code>),
+<code>program</code>, <code>model</code>, <code>language</code> (<code>auto</code> or a code such as <code>pl</code>) and <code>cloud_model</code>.</p>
+<p><strong>Keyboard.</strong> Ctrl+K (Cmd+K on macOS) opens the command palette: find a task by id or title, go to a view, create a task, or move the open task (start, review, block, done, back to to do) through the same calls as the board. Outside text fields, <code>n</code> starts a new task, <code>/</code> focuses the view&#39;s search, <code>g</code> then a letter goes to a view (<code>g b</code> board, <code>g l</code> tasks, <code>g i</code> inbox, <code>g c</code> channels, <code>g k</code> knowledge), and <code>?</code> lists every shortcut.</p>
+<p><strong>Back and Forward in the task panel.</strong> Following a task link inside the open task panel (a thread, a comment, the parent, a blocked-on task, a message) keeps the task you came from. <strong>Back</strong> in the panel header returns to it, and <strong>Forward</strong> goes again after Back. Alt+Left, Alt+Right and the mouse back and forward buttons do the same outside text fields. A link to the task already open adds no step. Closing the panel clears the history, so a task opened from a view with no panel open has no <strong>Back</strong>.</p>
+<h2 id="security"><a class="anchor" href="#security" aria-hidden="true">#</a>Security</h2>
+<ul>
+<li>The page talks to <code>swarmupd</code> only through Electron&#39;s main process, which holds the API token; the
+page never sees it. The main process accepts only <code>/api/</code> paths.</li>
+<li>The window runs with context isolation and the renderer sandbox, without Node, under a content
+security policy that allows only the app&#39;s own files.</li>
+<li>Task text, comments and messages come from agents, so Markdown is sanitized before it is shown.</li>
+<li>Links open in the browser; the window never navigates away from the app.</li>
+<li>The app refuses every browser permission except the microphone, and grants that only to its own
+page in its own window while voice input is on. No page gets the camera, the screen, location or
+notifications.</li>
+</ul>
+<h2 id="screenshots-for-checks"><a class="anchor" href="#screenshots-for-checks" aria-hidden="true">#</a>Screenshots for checks</h2>
+<p><code>SWARMUP_SCREENSHOTS=&lt;dir&gt;</code> renders the app offscreen, saves one PNG per view in
+<code>SWARMUP_VIEWS</code> (default every view; <code>task:&lt;id&gt;</code> and
+<code>runs:&lt;id&gt;</code> open one task or run), and quits. It needs no GPU or visible desktop.</p>
+<h2 id="smoke-check"><a class="anchor" href="#smoke-check" aria-hidden="true">#</a>Smoke check</h2>
+<p><code>npm run smoke:desktop</code> (after <code>npm run build:desktop</code>) renders every view offscreen against a
+scratch data root and fails when a view logs an error, a swarmupd call fails, or the allowlist refuses
+a call. It stops the scratch swarmupd it started. The release workflow runs it on Linux under
+<code>xvfb-run</code> for every <code>v*</code> tag.</p>
+<h2 id="record-check"><a class="anchor" href="#record-check" aria-hidden="true">#</a>Record check</h2>
+<p><code>npm run check:record</code> records 30 s clips of the <strong>Events</strong> scene in 16:9, 1:1 and 9:16 with
+Electron&#39;s own H.264 encoder, under the app&#39;s page CSP. It fails unless each MP4 has 1800 frames
+at 60 fps, the right size and a 30 s duration, plays to the end in Chromium&#39;s video player, and
+shows a drawn, moving picture; when <code>ffprobe</code> is on <code>PATH</code>, it counts the frames too. Pass
+<code>--software</code> to turn the GPU off, <code>--seconds N</code> or <code>--aspects 16x9</code> for a shorter run, and
+<code>--keep</code> to keep the clips.</p>
+
+<footer class="source"><a href="https://github.com/dawid-ai/agent-ops/blob/main/docs/desktop.md">View source on GitHub</a></footer>
+</article>
+</main>
+<footer class="bottom">
+<span>SwarmUp · MIT licensed · made in the open</span>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</footer>
+</body>
+</html>

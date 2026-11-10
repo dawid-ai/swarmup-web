@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1015">
+<title>Download · SwarmUp</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect width="10" height="10" fill="#E46FB3"/><rect x="12" width="10" height="10" fill="#E8875B"/><rect y="12" width="10" height="10" fill="#4FC3D9"/><rect x="12" y="12" width="10" height="10" fill="#A393FF"/></svg>SwarmUp</a>
+<nav>
+<a href="index.html">Home</a>
+<a href="download.html" aria-current="page">Download</a>
+<a href="install.html">Install</a>
+<a href="docs/index.html">Docs</a>
+<a href="changelog.html">Changelog</a>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</nav>
+<a class="button small" href="download.html">Download</a>
+</header>
+<main class="prose">
+<h1>Download SwarmUp</h1>
+<p class="lead">One installer sets up the desktop app, the orchestrator that runs your agents in the background, and the command-line tool. It installs for your user only and updates itself.</p>
+<div id="release">
+<p class="version">Latest release: <strong>v0.2.0-beta.5</strong> (pre-release, 2026-11-07)</p><p><a class="button" href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.5/AgentOps-Setup.exe">Download for Windows</a></p><p class="files">Files in this release:</p><ul><li><a href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.5/AgentOps-Setup.exe">AgentOps-Setup.exe</a> (117 MB)</li></ul><p><a href="https://github.com/dawid-ai/agent-ops/releases/tag/v0.2.0-beta.5">Release notes on GitHub</a></p>
+</div>
+<h2>Before you install</h2>
+<ul>
+<li>Windows 10 or 11. The desktop app ships for Windows today; on macOS and Linux, run the command-line tool and the orchestrator from source (see the <a href="install.html#macos-and-linux">install guide</a>).</li>
+<li>Git, and at least one coding agent from your AI provider, signed in: today <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> or <a href="https://github.com/openai/codex">Codex</a>.</li>
+<li>The installer is not code-signed yet, so Windows SmartScreen asks first: choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+</ul>
+<p>Next: the <a href="install.html">install guide</a> walks you from the installer to your first agent task. Every release, with its notes, is on <a href="https://github.com/dawid-ai/agent-ops/releases">GitHub Releases</a>.</p>
+</main>
+<footer class="bottom">
+<span>SwarmUp · MIT licensed · made in the open</span>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</footer>
+<script>
+(function () {
+  var pickRelease = function pickRelease(list) {
+  const SHOW = /\.(exe|msi|dmg|pkg|appimage|deb|rpm)$/i;
+  for (const r of Array.isArray(list) ? list : []) {
+    if (!r || r.draft) continue;
+    const assets = (r.assets || [])
+      .filter((a) => a && SHOW.test(a.name) && a.browser_download_url)
+      .map((a) => ({ name: a.name, url: a.browser_download_url, size: a.size || 0 }));
+    const installer = assets.find((a) => /\.exe$/i.test(a.name));
+    if (!installer) continue;
+    return {
+      tag: r.tag_name,
+      url: r.html_url,
+      date: (r.published_at || r.created_at || '').slice(0, 10),
+      prerelease: !!r.prerelease,
+      installer,
+      assets,
+    };
+  }
+  return null;
+};
+  var releaseHtml = function releaseHtml(rel, releasesUrl) {
+  const esc = (s) =>
+    String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  // The attribute is split ('href' + '=') so the link check, which reads this function's source
+  // inside download.html, does not take the concatenation for a link.
+  const a = (url, text, cls) =>
+    '<a' + (cls ? ' class="' + cls + '"' : '') + ' href' + '="' + esc(url) + '">' + text + '</a>';
+  if (!rel) {
+    return (
+      '<p>The installer is on the ' +
+      a(releasesUrl, 'releases page') +
+      ': open the newest release and download the <code>.exe</code> file.</p>'
+    );
+  }
+  const mb = (n) => (n ? ' (' + (n / 1048576).toFixed(0) + ' MB)' : '');
+  // Betas are tagged v0.2.0-beta.5 but not always marked as pre-releases on GitHub.
+  const kind = rel.prerelease || String(rel.tag).indexOf('-') >= 0 ? 'pre-release' : 'stable';
+  const rows = rel.assets
+    .map((f) => '<li>' + a(f.url, esc(f.name)) + mb(f.size) + '</li>')
+    .join('');
+  return (
+    '<p class="version">Latest release: <strong>' +
+    esc(rel.tag) +
+    '</strong> (' +
+    kind +
+    (rel.date ? ', ' + esc(rel.date) : '') +
+    ')</p>' +
+    '<p>' +
+    a(rel.installer.url, 'Download for Windows', 'button') +
+    '</p>' +
+    '<p class="files">Files in this release:</p><ul>' +
+    rows +
+    '</ul>' +
+    '<p>' +
+    a(rel.url, 'Release notes on GitHub') +
+    '</p>'
+  );
+};
+  var shown = "v0.2.0-beta.5";
+  fetch('https://api.github.com/repos/dawid-ai/agent-ops/releases?per_page=20', {
+    headers: { accept: 'application/vnd.github+json' }
+  }).then(function (res) { return res.ok ? res.json() : null; }).then(function (list) {
+    var rel = list && pickRelease(list);
+    if (rel && rel.tag !== shown) {
+      document.getElementById('release').innerHTML = releaseHtml(rel, "https://github.com/dawid-ai/agent-ops/releases");
+    }
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1015">
+<title>Install SwarmUp · SwarmUp</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect width="10" height="10" fill="#E46FB3"/><rect x="12" width="10" height="10" fill="#E8875B"/><rect y="12" width="10" height="10" fill="#4FC3D9"/><rect x="12" y="12" width="10" height="10" fill="#A393FF"/></svg>SwarmUp</a>
+<nav>
+<a href="index.html">Home</a>
+<a href="download.html">Download</a>
+<a href="install.html" aria-current="page">Install</a>
+<a href="docs/index.html">Docs</a>
+<a href="changelog.html">Changelog</a>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</nav>
+<a class="button small" href="download.html">Download</a>
+</header>
+<main class="prose">
+<h1 id="install-swarmup">Install SwarmUp</h1>
+<p>This guide takes you from a clean Windows machine to a first task done by an agent, in about
+15 minutes. SwarmUp was called Agent Ops until its rename; until the renamed release ships, the
+installer, the app and its folders still use that name, and the command is <code>ops</code>.</p>
+<h2 id="what-you-need">What you need</h2>
+<ul>
+<li>Windows 10 or 11, with your normal user account. The installer needs no administrator rights.</li>
+<li><a href="https://git-scm.com/download/win">Git</a>. SwarmUp keeps tasks in a git repository.</li>
+<li>At least one coding agent from your AI provider, installed and signed in. Today that is
+<a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> (<code>claude</code>) or
+<a href="https://github.com/openai/codex">Codex</a> (<code>codex</code>); more providers are on the way. Agents run
+under your own plans and keys; SwarmUp never sees them.</li>
+</ul>
+<h2 id="1-install-the-app">1. Install the app</h2>
+<ol>
+<li>Download the installer from the <a href="download.html">download page</a> and run it.</li>
+<li>Windows SmartScreen asks first, because the installer is not code-signed yet: choose
+<strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+<li>Leave <strong>Add the ops command to my PATH</strong> checked, so <code>ops</code> works in PowerShell, Command Prompt
+and Git Bash.</li>
+</ol>
+<p>The installer puts the desktop app, the orchestrator and the <code>ops</code> command in your user folder.
+The orchestrator is the background process that starts your agents, keeps them within your limits
+and merges approved work; its program and log files are called <code>opsd</code>. The app updates itself: a new version downloads in the background and installs
+once no agent run is live and the window is closed.</p>
+<h2 id="2-make-a-folder-for-your-tasks">2. Make a folder for your tasks</h2>
+<p>Tasks live in a git repository of their own. Open a new terminal, so it picks up the new PATH:</p>
+<pre><code class="language-sh">mkdir my-tasks
+cd my-tasks
+git init
+ops init --name my-tasks --human human:you --with-agents
+</code></pre>
+<p><code>--with-agents</code> adds the starter agent roles, such as <code>codex:backend</code>, <code>claude:docs</code> and
+<code>claude:qa</code>. <code>ops agents</code> lists them. To share the queue with another machine, add a git remote; <code>ops sync</code> commits and
+pushes it.</p>
+<h2 id="3-start-the-app">3. Start the app</h2>
+<p>Start <strong>Agent Ops</strong> from the Start menu. On the first start it asks for your id (such as
+<code>human:you</code>) and the folder that holds your tasks: pick <code>my-tasks</code>. Then it starts the background
+service and shows your inbox.</p>
+<p>Check the machine from a terminal:</p>
+<pre><code class="language-sh">ops doctor
+</code></pre>
+<p>It reports the user config, your task folders, whether <code>claude</code> and <code>codex</code> are installed and
+signed in, and whether the service runs. Fix anything it marks before you go on.</p>
+<h2 id="4-give-an-agent-its-first-task">4. Give an agent its first task</h2>
+<p>The service starts paused, so nothing runs until you say so. Create a task, resume the service
+and start a run:</p>
+<pre><code class="language-sh">ops new &quot;Add a README to this folder&quot; --to codex:backend --as human:you
+ops daemon resume
+ops launch codex:backend --task T-0001 --budget 30m
+</code></pre>
+<p>With Claude Code instead of Codex, use <code>claude:docs</code> in both commands. <code>ops new</code> prints the task
+id; use it in <code>--task</code> if it is not <code>T-0001</code>. Watch the run in the app&#39;s <strong>Runs</strong> view, or
+with <code>ops runs</code> and <code>ops logs RUN</code>. The agent finishes with a review, which lands in your inbox:
+read the result, then approve it or ask for changes.</p>
+<p>To have the service start agents on its own when work arrives, turn on <strong>wake</strong> for them in the
+app&#39;s <strong>Settings</strong>, or set <code>wake: true</code> in the user config (see
+<a href="docs/supervisor.html">the supervisor docs</a>).</p>
+<h2 id="macos-and-linux">macOS and Linux</h2>
+<p>The desktop installer is Windows-only today. On macOS and Linux, run SwarmUp from source with
+Node.js 22 or later and git:</p>
+<pre><code class="language-sh">git clone https://github.com/dawid-ai/agent-ops.git
+cd agent-ops
+npm install
+npm run build
+npm run ops -- help
+</code></pre>
+<p>Then follow steps 2 to 4 with <code>npm run ops --</code> in place of <code>ops</code>, and start the service with
+<code>npm run ops -- daemon start</code>. <code>npm run desktop</code> opens the app from the checkout.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="docs/index.html">How SwarmUp works</a>: tasks, agents, the service and how data is stored.</li>
+<li><a href="docs/protocol.html">The protocol</a>: statuses, reviews, handoffs and permissions.</li>
+<li><a href="docs/desktop.html">The desktop app</a>: every view and setting.</li>
+<li><a href="changelog.html">The changelog</a>: what changed in each release.</li>
+</ul>
+
+</main>
+<footer class="bottom">
+<span>SwarmUp · MIT licensed · made in the open</span>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</footer>
+</body>
+</html>

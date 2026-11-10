@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1015">
+<title>Changelog · SwarmUp</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect width="10" height="10" fill="#E46FB3"/><rect x="12" width="10" height="10" fill="#E8875B"/><rect y="12" width="10" height="10" fill="#4FC3D9"/><rect x="12" y="12" width="10" height="10" fill="#A393FF"/></svg>SwarmUp</a>
+<nav>
+<a href="index.html">Home</a>
+<a href="download.html">Download</a>
+<a href="install.html">Install</a>
+<a href="docs/index.html">Docs</a>
+<a href="changelog.html" aria-current="page">Changelog</a>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</nav>
+<a class="button small" href="download.html">Download</a>
+</header>
+<main class="prose">
+<h1 id="updates">Updates</h1>
+<p>What changed in each release, for people who use the app. Every change, including the small
+ones, is in <a href="https://github.com/dawid-ai/agent-ops/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+<h2 id="v020-beta2-2026-11-05">v0.2.0-beta.2 (2026-11-05)</h2>
+<ul>
+<li><strong>Repeating tasks.</strong> Set a task to come back daily, weekly, on chosen weekdays, monthly or
+yearly, or whenever another task or a set of subtasks closes. Manage them in the new
+<strong>Repeating</strong> view or with <code>swarmup repeat</code>. A repeat waits while its last task is still open, and
+a slot missed while the PC was off fires once.</li>
+<li><strong>Work without an owner finds one.</strong> A finding you accept, or a task whose owner isn&#39;t a
+configured agent, goes to the right role (engineer, QA, reviewer or PM) within a tick, so it
+starts without you assigning it. <code>swarmup new</code> and <code>swarmup assign</code> refuse an owner no agent answers to.</li>
+<li><strong>Triage from the task panel.</strong> An open idea or finding shows <strong>Make task</strong>, <strong>Bug</strong> and
+<strong>Park</strong> right in the panel, with an owner and a priority.</li>
+<li><strong>Back and Forward in the task panel.</strong> Follow a task link, then go back with the panel&#39;s
+<strong>Back</strong>, Alt+Left or the mouse back button.</li>
+</ul>
+<h2 id="v020-beta1-2026-11-05">v0.2.0-beta.1 (2026-11-05)</h2>
+<p>The first installable SwarmUp.</p>
+<ul>
+<li><strong>One installer for everything.</strong> <code>SwarmUp-Setup.exe</code> installs the desktop app, swarmupd (the
+background service that starts and watches agent runs) and the <code>swarmup</code> command. They update
+together: a new version downloads in the background and installs once no agent run is live and
+the window is closed. <strong>Settings &gt; Updates</strong> and the tray install it sooner.</li>
+<li><strong><code>swarmup</code> in your terminal.</strong> The installer can add <code>swarmup</code> to your PATH, for PowerShell, cmd and Git
+Bash. Agent runs always find it, whatever you choose.</li>
+<li><strong>A tray icon for swarmupd.</strong> Green running, amber paused, grey stopped, with a blue dot when
+something needs you. Right-click to start, stop, pause, resume or restart swarmupd without opening
+the window, and choose whether swarmupd starts with the app or when you sign in to Windows.</li>
+<li><strong>Search everything.</strong> Ctrl+F finds tasks by id, title, description or anything said in their
+thread, plus learn notes, channel posts and votes. Narrow it with <code>agent:codex</code>,
+<code>status:blocked</code>, <code>is:open</code> or <code>in:notes</code>.</li>
+<li><strong>Everything from the build so far:</strong> the board, inbox, task threads, agents and roles,
+providers, runs, schedules, standups, reports, channels, votes and the knowledge base.</li>
+</ul>
+<p>This is a beta and the installer is not signed yet, so Windows SmartScreen warns on first run:
+choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+
+</main>
+<footer class="bottom">
+<span>SwarmUp · MIT licensed · made in the open</span>
+<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+</footer>
+</body>
+</html>
