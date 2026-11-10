@@ -26,7 +26,7 @@
 <a class="button small" href="download.html">Download</a>
 </header>
 <main class="wide">
-<!-- Body of the home page; scripts/build-site.mjs wraps it in the site layout. Links to media/
+<!-- Body of the home page; swarmup-web/build.mjs wraps it in the site layout. Links to media/
      are the screenshots in docs/media/. site.js steps the schematic through its four stages; without
      it all four steps show and the schematic stays on the first. The schematic SVG is generated from
      node and line lists: change those lists, not the paths by hand. The AO-0175 excerpt and the
@@ -52,196 +52,276 @@
       </p>
     </div>
     <figure class="schematic" data-net>
-      <svg class="net" data-stage="0" viewBox="0 0 640 640" role="img" aria-labelledby="net-title">
+      <svg class="net" data-stage="0" viewBox="0 0 720 680" role="img" aria-labelledby="net-title">
         <title id="net-title">
-          How a task moves: you and the PM agent plan it, engineers from two AI providers build it
-          in parallel, a reviewer from the other provider checks it, and the orchestrator runs the
-          checks and merges it.
+          How a task moves through a swarm of agents from several AI providers: you, the PM agent
+          and a triage agent plan it, engineers build it in parallel, a reviewer from another
+          provider checks it, and the orchestrator runs the checks and merges it.
         </title>
         <g class="grid" aria-hidden="true">
-          <line x1="0" y1="0" x2="0" y2="640"></line>
-          <line x1="40" y1="0" x2="40" y2="640"></line>
-          <line x1="80" y1="0" x2="80" y2="640"></line>
-          <line x1="120" y1="0" x2="120" y2="640"></line>
-          <line x1="160" y1="0" x2="160" y2="640"></line>
-          <line x1="200" y1="0" x2="200" y2="640"></line>
-          <line x1="240" y1="0" x2="240" y2="640"></line>
-          <line x1="280" y1="0" x2="280" y2="640"></line>
-          <line x1="320" y1="0" x2="320" y2="640"></line>
-          <line x1="360" y1="0" x2="360" y2="640"></line>
-          <line x1="400" y1="0" x2="400" y2="640"></line>
-          <line x1="440" y1="0" x2="440" y2="640"></line>
-          <line x1="480" y1="0" x2="480" y2="640"></line>
-          <line x1="520" y1="0" x2="520" y2="640"></line>
-          <line x1="560" y1="0" x2="560" y2="640"></line>
-          <line x1="600" y1="0" x2="600" y2="640"></line>
-          <line x1="640" y1="0" x2="640" y2="640"></line>
-          <line x1="0" y1="0" x2="640" y2="0"></line>
-          <line x1="0" y1="40" x2="640" y2="40"></line>
-          <line x1="0" y1="80" x2="640" y2="80"></line>
-          <line x1="0" y1="120" x2="640" y2="120"></line>
-          <line x1="0" y1="160" x2="640" y2="160"></line>
-          <line x1="0" y1="200" x2="640" y2="200"></line>
-          <line x1="0" y1="240" x2="640" y2="240"></line>
-          <line x1="0" y1="280" x2="640" y2="280"></line>
-          <line x1="0" y1="320" x2="640" y2="320"></line>
-          <line x1="0" y1="360" x2="640" y2="360"></line>
-          <line x1="0" y1="400" x2="640" y2="400"></line>
-          <line x1="0" y1="440" x2="640" y2="440"></line>
-          <line x1="0" y1="480" x2="640" y2="480"></line>
-          <line x1="0" y1="520" x2="640" y2="520"></line>
-          <line x1="0" y1="560" x2="640" y2="560"></line>
-          <line x1="0" y1="600" x2="640" y2="600"></line>
-          <line x1="0" y1="640" x2="640" y2="640"></line>
+          <line x1="0" y1="0" x2="0" y2="680"></line>
+          <line x1="40" y1="0" x2="40" y2="680"></line>
+          <line x1="80" y1="0" x2="80" y2="680"></line>
+          <line x1="120" y1="0" x2="120" y2="680"></line>
+          <line x1="160" y1="0" x2="160" y2="680"></line>
+          <line x1="200" y1="0" x2="200" y2="680"></line>
+          <line x1="240" y1="0" x2="240" y2="680"></line>
+          <line x1="280" y1="0" x2="280" y2="680"></line>
+          <line x1="320" y1="0" x2="320" y2="680"></line>
+          <line x1="360" y1="0" x2="360" y2="680"></line>
+          <line x1="400" y1="0" x2="400" y2="680"></line>
+          <line x1="440" y1="0" x2="440" y2="680"></line>
+          <line x1="480" y1="0" x2="480" y2="680"></line>
+          <line x1="520" y1="0" x2="520" y2="680"></line>
+          <line x1="560" y1="0" x2="560" y2="680"></line>
+          <line x1="600" y1="0" x2="600" y2="680"></line>
+          <line x1="640" y1="0" x2="640" y2="680"></line>
+          <line x1="680" y1="0" x2="680" y2="680"></line>
+          <line x1="720" y1="0" x2="720" y2="680"></line>
+          <line x1="0" y1="0" x2="720" y2="0"></line>
+          <line x1="0" y1="40" x2="720" y2="40"></line>
+          <line x1="0" y1="80" x2="720" y2="80"></line>
+          <line x1="0" y1="120" x2="720" y2="120"></line>
+          <line x1="0" y1="160" x2="720" y2="160"></line>
+          <line x1="0" y1="200" x2="720" y2="200"></line>
+          <line x1="0" y1="240" x2="720" y2="240"></line>
+          <line x1="0" y1="280" x2="720" y2="280"></line>
+          <line x1="0" y1="320" x2="720" y2="320"></line>
+          <line x1="0" y1="360" x2="720" y2="360"></line>
+          <line x1="0" y1="400" x2="720" y2="400"></line>
+          <line x1="0" y1="440" x2="720" y2="440"></line>
+          <line x1="0" y1="480" x2="720" y2="480"></line>
+          <line x1="0" y1="520" x2="720" y2="520"></line>
+          <line x1="0" y1="560" x2="720" y2="560"></line>
+          <line x1="0" y1="600" x2="720" y2="600"></line>
+          <line x1="0" y1="640" x2="720" y2="640"></line>
+          <line x1="0" y1="680" x2="720" y2="680"></line>
         </g>
         <g class="e s0" style="--c: var(--you)">
-          <path class="edge" d="M320 40 V85 H120 V130"></path>
-          <path class="flow" d="M320 40 V85 H120 V130"></path>
+          <path class="edge" d="M360 40 V80 H160 V120"></path>
+          <path class="flow" d="M360 40 V80 H160 V120"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.0s"
+              dur="1.9s"
               repeatCount="indefinite"
-              path="M320 40 V85 H120 V130"
+              path="M360 40 V80 H160 V120"
+            ></animateMotion>
+          </rect>
+        </g>
+        <g class="e s0" style="--c: var(--you)">
+          <path class="edge" d="M360 40 V80 H560 V120"></path>
+          <path class="flow" d="M360 40 V80 H560 V120"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion
+              dur="1.9s"
+              repeatCount="indefinite"
+              path="M360 40 V80 H560 V120"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s0" style="--c: var(--claude)">
-          <path class="edge" d="M120 130 V240 H262"></path>
-          <path class="flow" d="M120 130 V240 H262"></path>
+          <path class="edge" d="M160 120 V230 H300"></path>
+          <path class="flow" d="M160 120 V230 H300"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.2s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M120 130 V240 H262"
+              path="M160 120 V230 H300"
+            ></animateMotion>
+          </rect>
+        </g>
+        <g class="e s0" style="--c: var(--jev)">
+          <path class="edge" d="M560 120 V230 H420"></path>
+          <path class="flow" d="M560 120 V230 H420"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion
+              dur="2.1s"
+              repeatCount="indefinite"
+              path="M560 120 V230 H420"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s1" style="--c: var(--claude)">
-          <path class="edge" d="M290 262 V340 H100"></path>
-          <path class="flow" d="M290 262 V340 H100"></path>
+          <path class="edge" d="M310 252 V290 H80 V340"></path>
+          <path class="flow" d="M310 252 V290 H80 V340"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.2s"
+              dur="2.0s"
               repeatCount="indefinite"
-              path="M290 262 V340 H100"
+              path="M310 252 V290 H80 V340"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s1" style="--c: var(--codex)">
-          <path class="edge" d="M350 262 V340 H540"></path>
-          <path class="flow" d="M350 262 V340 H540"></path>
+          <path class="edge" d="M340 252 V310 H260 V340"></path>
+          <path class="flow" d="M340 252 V310 H260 V340"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.2s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M350 262 V340 H540"
+              path="M340 252 V310 H260 V340"
             ></animateMotion>
           </rect>
         </g>
-        <g class="e s1" style="--c: var(--codex)">
-          <path class="edge" d="M378 240 H520 V130"></path>
-          <path class="flow" d="M378 240 H520 V130"></path>
+        <g class="e s1" style="--c: var(--grok)">
+          <path class="edge" d="M380 252 V310 H460 V340"></path>
+          <path class="flow" d="M380 252 V310 H460 V340"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.2s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M378 240 H520 V130"
+              path="M380 252 V310 H460 V340"
+            ></animateMotion>
+          </rect>
+        </g>
+        <g class="e s1" style="--c: var(--gemini)">
+          <path class="edge" d="M410 252 V290 H640 V340"></path>
+          <path class="flow" d="M410 252 V290 H640 V340"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion
+              dur="2.1s"
+              repeatCount="indefinite"
+              path="M410 252 V290 H640 V340"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s2" style="--c: var(--codex)">
-          <path class="edge" d="M100 340 V600 H440 V540"></path>
-          <path class="flow" d="M100 340 V600 H440 V540"></path>
+          <path class="edge" d="M80 340 V640 H360 V580"></path>
+          <path class="flow" d="M80 340 V640 H360 V580"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
               dur="2.0s"
               repeatCount="indefinite"
-              path="M100 340 V600 H440 V540"
+              path="M80 340 V640 H360 V580"
+            ></animateMotion>
+          </rect>
+        </g>
+        <g class="e s2" style="--c: var(--grok)">
+          <path class="edge" d="M260 340 V520 H580 V580"></path>
+          <path class="flow" d="M260 340 V520 H580 V580"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion
+              dur="2.1s"
+              repeatCount="indefinite"
+              path="M260 340 V520 H580 V580"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s2" style="--c: var(--claude)">
-          <path class="edge" d="M540 340 V500 H200 V540"></path>
-          <path class="flow" d="M540 340 V500 H200 V540"></path>
+          <path class="edge" d="M460 340 V540 H140 V580"></path>
+          <path class="flow" d="M460 340 V540 H140 V580"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.0s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M540 340 V500 H200 V540"
+              path="M460 340 V540 H140 V580"
+            ></animateMotion>
+          </rect>
+        </g>
+        <g class="e s2" style="--c: var(--grok)">
+          <path class="edge" d="M640 340 V600 H580"></path>
+          <path class="flow" d="M640 340 V600 H580"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion
+              dur="2.1s"
+              repeatCount="indefinite"
+              path="M640 340 V600 H580"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s3" style="--c: var(--opsd)">
-          <path class="edge" d="M440 540 V440 H320"></path>
-          <path class="flow" d="M440 540 V440 H320"></path>
+          <path class="edge" d="M140 580 V500 H360 V468"></path>
+          <path class="flow" d="M140 580 V500 H360 V468"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.2s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M440 540 V440 H320"
+              path="M140 580 V500 H360 V468"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s3" style="--c: var(--opsd)">
-          <path class="edge" d="M200 540 V470 H320 V440"></path>
-          <path class="flow" d="M200 540 V470 H320 V440"></path>
+          <path class="edge" d="M580 580 V500 H360"></path>
+          <path class="flow" d="M580 580 V500 H360"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
             <animateMotion
-              dur="2.0s"
+              dur="2.1s"
               repeatCount="indefinite"
-              path="M200 540 V470 H320 V440"
+              path="M580 580 V500 H360"
             ></animateMotion>
           </rect>
         </g>
         <g class="e s3" style="--c: var(--opsd)">
-          <path class="edge" d="M320 440 V262"></path>
-          <path class="flow" d="M320 440 V262"></path>
+          <path class="edge" d="M360 580 V468"></path>
+          <path class="flow" d="M360 580 V468"></path>
           <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion dur="1.7s" repeatCount="indefinite" path="M320 440 V262"></animateMotion>
+            <animateMotion dur="2.1s" repeatCount="indefinite" path="M360 580 V468"></animateMotion>
           </rect>
         </g>
-        <g class="hub s0 s1 s3">
-          <rect x="262" y="218" width="116" height="44"></rect>
-          <text x="320" y="245" text-anchor="middle">queue</text>
+        <g class="e s3" style="--c: var(--opsd)">
+          <path class="edge" d="M360 432 V252"></path>
+          <path class="flow" d="M360 432 V252"></path>
+          <rect class="packet" x="-3" y="-3" width="6" height="6">
+            <animateMotion dur="2.1s" repeatCount="indefinite" path="M360 432 V252"></animateMotion>
+          </rect>
+        </g>
+        <g class="hub s0 s1 s3" style="--c: var(--fg)">
+          <rect x="300" y="208" width="120" height="44"></rect>
+          <text x="360" y="235" text-anchor="middle">queue</text>
+        </g>
+        <g class="hub s3" style="--c: var(--opsd)">
+          <rect x="288" y="432" width="144" height="36"></rect>
+          <text x="360" y="455" text-anchor="middle">orchestrator</text>
         </g>
         <g class="n s0" style="--c: var(--you)">
-          <rect x="313" y="33" width="14" height="14"></rect>
-          <text x="336" y="45" text-anchor="start">human:you</text>
+          <rect x="353" y="33" width="14" height="14"></rect>
+          <text x="376" y="45" text-anchor="start">human:you</text>
         </g>
         <g class="n s0" style="--c: var(--claude)">
-          <rect x="113" y="123" width="14" height="14"></rect>
-          <text x="136" y="135" text-anchor="start">claude:pm</text>
+          <rect x="153" y="113" width="14" height="14"></rect>
+          <text x="176" y="125" text-anchor="start">claude:pm</text>
         </g>
-        <g class="n s1" style="--c: var(--codex)">
-          <rect x="513" y="123" width="14" height="14"></rect>
-          <text x="504" y="135" text-anchor="end">codex:qa</text>
+        <g class="n s0" style="--c: var(--jev)">
+          <rect x="553" y="113" width="14" height="14"></rect>
+          <text x="544" y="125" text-anchor="end">jev:triage</text>
         </g>
         <g class="n s1 s2" style="--c: var(--claude)">
-          <rect x="93" y="333" width="14" height="14"></rect>
-          <text x="100" y="370" text-anchor="middle">claude:engineer</text>
+          <rect x="73" y="333" width="14" height="14"></rect>
+          <text x="80" y="370" text-anchor="middle">claude:engineer</text>
         </g>
         <g class="n s1 s2" style="--c: var(--codex)">
-          <rect x="533" y="333" width="14" height="14"></rect>
-          <text x="540" y="370" text-anchor="middle">codex:engineer</text>
+          <rect x="253" y="333" width="14" height="14"></rect>
+          <text x="260" y="370" text-anchor="middle">codex:engineer</text>
         </g>
-        <g class="n s3" style="--c: var(--opsd)">
-          <rect x="313" y="433" width="14" height="14"></rect>
-          <text x="336" y="445" text-anchor="start">orchestrator</text>
+        <g class="n s1 s2" style="--c: var(--grok)">
+          <rect x="453" y="333" width="14" height="14"></rect>
+          <text x="460" y="370" text-anchor="middle">grok:engineer</text>
+        </g>
+        <g class="n s1 s2" style="--c: var(--gemini)">
+          <rect x="633" y="333" width="14" height="14"></rect>
+          <text x="640" y="370" text-anchor="middle">gemini:qa</text>
         </g>
         <g class="n s2 s3" style="--c: var(--claude)">
-          <rect x="193" y="533" width="14" height="14"></rect>
-          <text x="184" y="545" text-anchor="end">claude:reviewer</text>
+          <rect x="133" y="573" width="14" height="14"></rect>
+          <text x="140" y="610" text-anchor="middle">claude:reviewer</text>
         </g>
         <g class="n s2 s3" style="--c: var(--codex)">
-          <rect x="433" y="533" width="14" height="14"></rect>
-          <text x="456" y="545" text-anchor="start">codex:reviewer</text>
+          <rect x="353" y="573" width="14" height="14"></rect>
+          <text x="360" y="610" text-anchor="middle">codex:reviewer</text>
+        </g>
+        <g class="n s2 s3" style="--c: var(--grok)">
+          <rect x="573" y="573" width="14" height="14"></rect>
+          <text x="580" y="610" text-anchor="middle">grok:reviewer</text>
         </g>
       </svg>
       <figcaption class="legend">
         <span style="--c: var(--you)">you</span>
-        <span style="--c: var(--claude)">provider A, such as Claude Code</span>
-        <span style="--c: var(--codex)">provider B, such as Codex</span>
-        <span style="--c: var(--opsd)">the orchestrator</span>
+        <span style="--c: var(--claude)">Claude</span>
+        <span style="--c: var(--codex)">Codex</span>
+        <span style="--c: var(--grok)">Grok<small>next</small></span>
+        <span style="--c: var(--gemini)">Gemini<small>next</small></span>
+        <span style="--c: var(--jev)">Jev<small>next</small></span>
+        <span style="--c: var(--opsd)">orchestrator</span>
       </figcaption>
     </figure>
   </div>

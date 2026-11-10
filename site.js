@@ -1,3 +1,4 @@
+/* global document, window, setInterval */
 (function () {
   var svg = document.querySelector('[data-net] svg.net');
   var tabs = document.querySelectorAll('[data-tab]');
@@ -12,9 +13,15 @@
     }
   }
   for (var k = 0; k < tabs.length; k++) {
-    tabs[k].addEventListener('click', (function (i) {
-      return function () { manual = true; show(i); };
-    })(k));
+    tabs[k].addEventListener(
+      'click',
+      (function (i) {
+        return function () {
+          manual = true;
+          show(i);
+        };
+      })(k),
+    );
   }
   show(0);
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
