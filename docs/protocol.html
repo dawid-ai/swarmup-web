@@ -130,8 +130,8 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>review ID MSG [--to ID]</code></td>
-<td><code>needs-review</code>. The reviewer defaults to the delegation&#39;s expected reviewer, then the root&#39;s <code>human</code>. An agent reviewer must come from another provider than the author; this binds humans too, and only <code>--force</code> (recorded) passes. A request that names the same commit as the <code>changes</code> verdicts before it, with no new commit since, goes to the root&#39;s <code>human</code> instead of an agent reviewer, with those verdicts quoted; <code>--force</code> (recorded) keeps the agent.</td>
+<td><code>review ID MSG [--to ID | --human]</code></td>
+<td><code>needs-review</code>. Without <code>--to</code>, the reviewer is the root&#39;s <code>human</code> for <code>--human</code> or a task whose type or label is in the escalation list (<code>release</code>, <code>publish</code>, <code>money</code>, <code>billing</code>, <code>payment</code>, <code>account</code>, <code>accounts</code>, <code>credentials</code>, <code>client</code>, <code>delete-data</code>, <code>irreversible</code>); else the delegation&#39;s expected reviewer; else a reviewer agent of another provider than the author (<code>codex:reviewer</code> for Claude work); else the root&#39;s <code>human</code>. An agent reviewer must come from another provider than the author; this binds humans too, and only <code>--force</code> (recorded) passes. A request that names the same commit as the <code>changes</code> verdicts before it, with no new commit since, goes to the root&#39;s <code>human</code> instead of an agent reviewer, with those verdicts quoted; <code>--force</code> (recorded) keeps the agent.</td>
 </tr>
 <tr>
 <td><code>verdict ID approve|changes MSG</code></td>
@@ -150,8 +150,8 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 <td>New owner with limits and an expected reviewer, recorded on the task. A later <code>review</code> without <code>--to</code> goes to that reviewer, who must come from another provider than the delegate.</td>
 </tr>
 <tr>
-<td><code>ask ID QUESTION [--to ID]</code></td>
-<td><code>blocked</code>, waiting for the human (or <code>--to</code>).</td>
+<td><code>ask ID QUESTION [--to ID | --human]</code></td>
+<td><code>blocked</code>. Without <code>--to</code>, an agent&#39;s question waits for the PM (the <code>opsd.chat.agent</code> when it is a PM, else the first PM); the PM&#39;s own, the orchestrator&#39;s, one with <code>--human</code>, or any when no PM is configured waits for the human. The addressee of an open ask may forward it with its own <code>ask</code>; the answer still goes to the agent that asked first.</td>
 </tr>
 <tr>
 <td><code>block ID MSG [--on IDS] [--to ID]</code></td>
@@ -180,11 +180,11 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 </tr>
 <tr>
 <td><code>inbox [--mark-read]</code></td>
-<td>Unread messages addressed to you, asks and reviews waiting for you, and, for humans, tasks you own and findings to triage. A review item shows the latest request: who asked, its text, and the PR, commit and branch it names. A finding with an open question to you is one <code>triage</code> item that carries the question. <code>--mark-read</code> clears messages only.</td>
+<td>Unread messages addressed to you, asks and reviews waiting for you, and, for humans, tasks you own. Findings to triage go to the PM when one is configured, and to a person only when assigned to them; without a PM, to every person. A review item shows the latest request: who asked, its text, and the PR, commit and branch it names. A finding with an open question to you is one <code>triage</code> item that carries the question. <code>--mark-read</code> clears messages only.</td>
 </tr>
 <tr>
 <td><code>new TITLE [...]</code></td>
-<td>Creates a task. A human or the orchestrator creates it as asked. An agent creates a task only with <code>--parent</code> naming an open, approved task (created, accepted, assigned, delegated or reopened by a human or the orchestrator, or a subtask of one); otherwise <code>new</code> files a <code>finding</code> that waits for triage and prints a note. Ideas, findings and questions pass as filed.</td>
+<td>Creates a task. A human or the orchestrator creates it as asked. An agent creates a task only with <code>--parent</code> naming an open, approved task (created by a human or the orchestrator, or accepted, assigned, delegated or reopened by a human, the orchestrator or a PM, or a subtask of one); otherwise <code>new</code> files a <code>finding</code> that waits for the PM&#39;s triage and prints a note. Ideas, findings and questions pass as filed.</td>
 </tr>
 <tr>
 <td><code>list</code>, <code>show ID [--ids]</code></td>
@@ -196,11 +196,11 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 </tr>
 <tr>
 <td><code>retype ID TYPE [MSG] [--to OWNER] [--priority P] [--answer TEXT]</code></td>
-<td>Changes the task type, for example a finding accepted as <code>bug</code> or set aside as <code>idea</code> (human or orchestrator); <code>--to</code> also assigns it, <code>--priority</code> sets its priority and <code>--answer</code> answers its open question, in the same write. Written as a <code>retype</code> event; <code>task.md</code> keeps the type it was filed with.</td>
+<td>Changes the task type, for example a finding accepted as <code>bug</code> or set aside as <code>idea</code> (human, orchestrator or PM); <code>--to</code> also assigns it, <code>--priority</code> sets its priority and <code>--answer</code> answers its open question, in the same write. Written as a <code>retype</code> event; <code>task.md</code> keeps the type it was filed with.</td>
 </tr>
 <tr>
 <td><code>assign ID TO</code>, <code>priority ID P</code>, <code>park ID MSG</code>, <code>reopen ID</code></td>
-<td>Housekeeping.</td>
+<td>Housekeeping. A PM may assign and set the priority of any task nobody holds, and park.</td>
 </tr>
 <tr>
 <td><code>sync [--pull] [--push] [--auto] [--session-end]</code></td>
@@ -437,12 +437,14 @@ of it, or <code>swarmup handoff</code> it to an agent who knows.</li>
 the app&#39;s task panel. The next run&#39;s prompt lists the earlier answers and replies, oldest first,
 and asks for an answer to the latest reply.</li>
 </ul>
-<p><code>swarmup ask</code> is the other direction: an agent working a task asks a person, and that task blocks
-until the answer. A question blocks nothing; it is its own task.</p>
+<p><code>swarmup ask</code> is the other direction: an agent working a task asks for a decision, and that task
+blocks until the answer. It goes to the PM first, which answers it or forwards it to a person. A
+question blocks nothing; it is its own task.</p>
 <h2 id="permissions"><a class="anchor" href="#permissions" aria-hidden="true">#</a>Permissions</h2>
 <ul>
 <li>The holder of the claim, or the owner, may start, progress, review, ask, block, hand off and close.</li>
-<li>Humans and the orchestrator role (<code>*:orchestrator</code>) may act on any task; only they park.</li>
+<li>Humans and the orchestrator role (<code>*:orchestrator</code>) may act on any task. They and a PM (<code>*:pm</code>)
+retype and park tasks, and a PM assigns and sets the priority of tasks nobody holds (AO-0173).</li>
 <li>The reviewer, or a human, gives the verdict.</li>
 <li>A role file&#39;s <code>can_claim</code> lists the task types the role takes when nobody owns the task. With no
 <code>can_claim</code>, a role takes any type, except the read-only roles <code>qa</code>, <code>reviewer</code>, <code>pm</code>
