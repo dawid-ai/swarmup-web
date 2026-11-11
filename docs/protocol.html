@@ -586,7 +586,9 @@ the winner. swarmupd stops a live run whose claim lost (reason <code>lost-claim<
 prints &quot;not synced yet&quot; and the next sync sends it. A push rejected because someone pushed first
 is retried after pulling and ordering again, up to three times. A push held back because the
 unpushed commits also change files outside the root (&quot;push them yourself or pass --all-paths&quot;)
-is tried again by <code>--auto</code>, and so by swarmupd, <code>push_minutes</code> later, not at every swarmupd tick.</p>
+is tried again by <code>--auto</code>, and so by swarmupd, <code>push_minutes</code> later, not at every swarmupd tick.
+Commits swarmupd merged do not hold the push back when swarmupd syncs (see
+<a href="supervisor.html#pushing-task-branches">supervisor.md</a>).</p>
 <p>Sync commits only on the store branch: <code>sync.branch</code> in <code>config.yml</code>, else the branch this clone
 learned on its first sync (kept in <code>.ops/sync.json</code>). The first sync learns the checked-out branch
 only when it is the one local branch holding the newest store commit, or the one such branch with

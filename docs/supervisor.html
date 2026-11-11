@@ -776,8 +776,16 @@ a failed push leave out URLs and sign-ins.</li>
 the approved commit, so that branch is not pushed again unless new commits land on it. Once the
 remote&#39;s base has the merged commit, swarmupd deletes the remote branch, only while the remote
 branch holds nothing beyond the approved commit, and with a lease on the tip it checked, so a
-push that lands in between keeps it. The local branch stays. The engine&#39;s task store sync does
-not push code commits on the base, so the delete waits for the push of the base.</li>
+push that lands in between keeps it. The local branch stays. A review that names the base
+itself as its branch queues no delete: a base&#39;s remote branch is never deleted.</li>
+<li><strong>Pushing the base.</strong> Before it moves the base, swarmupd records a key for each merged commit&#39;s
+patch in <code>approved.json</code> in the state folder, under the repo and the base it merged into, for
+30 days. swarmupd&#39;s task store sync then pushes the base when every unpushed commit that
+changes files outside the task store has a patch approved for that repo and branch, so merged
+code goes out with the store commits. An approval counts only in its own repo and branch, and
+not at all after 30 days, even before the next merge clears it out. The key leaves out blob ids
+and line numbers, so a commit the sync&#39;s pull rebased still matches. Any other code commit on
+the base holds the push back, as before (&quot;push them yourself or pass --all-paths&quot;); <code>swarmup sync</code> run by hand does not know the approvals.</li>
 <li>An unreachable remote ends the round with a warning; the next sync tries again. What swarmupd
 decided and what it has to delete are kept in <code>branches.json</code> in the state folder.</li>
 </ul>
