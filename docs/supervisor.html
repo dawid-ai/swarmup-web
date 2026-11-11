@@ -248,6 +248,36 @@ commit there and leave the store checkout&#39;s branch alone. The worktree holds
 store as of its branch, so a run whose folder holds such a copy gets <code>SWARMUP_ROOTS_ONLY=1</code>: its
 <code>swarmup</code> uses only <code>SWARMUP_ROOTS</code>, the copied root first, never the stale copy. To keep such runs in
 the store checkout, one writer at a time, set <code>opsd.task_worktrees: false</code>.</li>
+<li><strong>Reclaiming task worktrees (AO-0230).</strong> Every 10 minutes, and at swarmupd&#39;s first tick,
+swarmupd removes the worktree <code>out/wt-&lt;ID&gt;</code> of each task that has been <code>done</code> or <code>parked</code> for
+<code>opsd.reclaim_after_minutes</code> (60). It removes a worktree only when no run works in it, no merge
+of the task waits, <code>git status</code> shows no change, and its commit is on a branch. The branch
+stays. swarmupd notes on the task (as <code>opsd:worktree</code>) which branch and commit hold the work,
+and a reopened task gets its worktree again on that branch. A worktree that fails a check stays,
+with one warning per reason in the swarmupd log. swarmupd deletes the folder with Node&#39;s
+<code>fs.rm</code>, then runs <code>git worktree prune</code>. It never uses <code>git worktree remove</code>, because Git for
+Windows follows a junction in the folder, such as a <code>node_modules</code> entry linked to the main
+checkout, and deletes what the junction points to. A removal is saved before the folder is
+touched, so the next sweep finishes one that a crash or a locked file cut off. Set
+<code>opsd.reclaim_worktrees: false</code> to keep every worktree.</li>
+<li><strong>Crash recovery in task worktrees (AO-0230).</strong> swarmupd makes a task worktree locked with the
+reason <code>swarmupd: making</code> and unlocks it once git has checked out every file. A worktree that
+still has that lock was cut off mid-checkout by a crash or power cut: no run ever worked in it,
+so the next sweep deletes it, and the next run makes it again. Before a run starts in a task
+worktree, swarmupd removes an <code>index.lock</code> older than 2 minutes there. After a run&#39;s processes
+are gone, it removes the run&#39;s <code>index.lock</code> before committing what the run left. Git leaves
+such a lock when it is killed mid-write, and every later git command in the worktree fails
+until it is gone.</li>
+<li><strong>Scratch folders (AO-0230).</strong> Each run gets its own folder, <code>&lt;state&gt;/scratch/&lt;run id&gt;</code>, named in
+<code>SWARMUP_SCRATCH</code> and in <code>TEMP</code>, <code>TMP</code> and <code>TMPDIR</code>. It is an extra writable folder for Claude
+(<code>--add-dir</code>) and Codex. The prompt of a run that writes tells it to put logs, test output,
+experiments and downloads there, and never in the repo, its <code>out/</code> folder or the folder that
+holds the repo. swarmupd removes a scratch folder <code>opsd.scratch_days</code> (7) days after its run
+ends. For a writing run, swarmupd lists the folder that holds the store checkout (unless that is
+a home, temp or drive-root folder), plus the store checkout and its <code>out/</code> for a run in a task
+worktree. It lists them when the run starts and again when it ends. The <code>run-end</code> event names
+each new file or folder; swarmupd changes nothing there, since another run or a person may have
+made them.</li>
 </ul>
 <h3 id="processes"><a class="anchor" href="#processes" aria-hidden="true">#</a>Processes</h3>
 <p>Every process starts with no console window. swarmupd stops only processes it started, and never
@@ -569,6 +599,9 @@ opsd:
   wake_cooldown_minutes: 10
   stuck_runs: 3 # block a task for a PM after this many unfinished runs in a row; 0: never
   sync: true # commit, pull and push each root when its sync policy says so
+  reclaim_worktrees: true # remove a closed task&#39;s clean worktree; its branch stays
+  reclaim_after_minutes: 60 # how long a task stays closed before that
+  scratch_days: 7 # how long a run&#39;s scratch folder stays after the run
   seeded: 1 # the defaults were written once; from then on runtimes lists every provider
   runtimes:
     claude: { command: claude, model: opus }
