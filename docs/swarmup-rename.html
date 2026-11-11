@@ -760,6 +760,58 @@ classes; everything else is history (this page, <code>CHANGELOG.md</code>, <code
 <td>Not the product name</td>
 </tr>
 </tbody></table>
+<h2 id="migrations-ao-0200"><a class="anchor" href="#migrations-ao-0200" aria-hidden="true">#</a>Migrations (AO-0200)</h2>
+<p>Each migration runs once, never replaces data at the new place, and logs to <code>migrations.log</code> in
+the user config folder.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>When</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Store folder (rows 6, 7)</td>
+<td><code>swarmup migrate</code>, by a person</td>
+<td>Renames <code>.agent-ops/</code> to <code>.swarmup/</code> and commits it as an <code>ops:</code> store commit. A clone that pulls it moves unpushed files and <code>.ops/</code> along</td>
+</tr>
+<tr>
+<td>User config (row 8)</td>
+<td>First use</td>
+<td>Copy; the old file stays</td>
+</tr>
+<tr>
+<td>swarmupd state (row 9)</td>
+<td>swarmupd start</td>
+<td>Rename, not copy: it holds tens of thousands of files. Stops an old swarmupd through its <code>opsd.json</code> first</td>
+</tr>
+<tr>
+<td>App id, install (12-15)</td>
+<td>Installer</td>
+<td><code>nsis.guid</code> stays the Agent Ops GUID, so the installer upgrades in place</td>
+</tr>
+<tr>
+<td>User data, sign-in (5, 18)</td>
+<td>First start of the app</td>
+<td>Copies <code>%APPDATA%\Agent Ops</code> to <code>%APPDATA%\SwarmUp</code>; renames the sign-in entry, keeping <code>--ops-cwd</code></td>
+</tr>
+<tr>
+<td>Storage keys (row 18)</td>
+<td>Read</td>
+<td><code>swarmup.*</code> keys, falling back to <code>agent-ops.*</code> until written</td>
+</tr>
+</tbody></table>
+<p>Kept on purpose:</p>
+<ul>
+<li>The store move is a command, not automatic: a build from before the rename cannot read
+<code>.swarmup/</code>, so update every machine that shares a store before you move it.</li>
+<li>An updated install keeps its install folder and the PATH record under <code>HKCU\Software\Agent Ops</code>.
+Moving the folder during a silent update would also need the PATH entry and the sign-in entry
+moved inside the installer. New installs go to <code>Programs\SwarmUp</code>.</li>
+<li>File names inside the state folder (<code>opsd.json</code>, <code>opsd.lock</code>, <code>opsd.log</code>) and the update feed
+<code>repo: agent-ops</code> stay. The feed changes with the repo rename.</li>
+</ul>
 <h2 id="out-of-scope-here"><a class="anchor" href="#out-of-scope-here" aria-hidden="true">#</a>Out of scope here</h2>
 <ul>
 <li>The code rename, the migrations (rows 6-12, 18), the repo rename and the website are separate
