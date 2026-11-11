@@ -514,9 +514,9 @@ for a usage limit. Work owned by an agent of the signed-out provider by name, su
 change request sent back to <code>claude:engineer</code>, waits <code>signed_out_handoff_minutes</code> (default
 15; <code>0</code> never hands it over) from the later of the sign-out and the moment the task became
 <code>todo</code> for that agent, then swarmupd hands it to the same role on the next provider, with a
-handoff event that names the task&#39;s branch and worktree. Codex gets no work that has a
-worktree, since its runs cannot commit there yet (AO-0155). Reviews that need the signed-out
-provider wait for it.</li>
+handoff event that names the task&#39;s branch and worktree. Codex gets such work too: a writing
+Codex run commits in a worktree (AO-0155, AO-0234). Reviews that need the signed-out provider
+wait for it.</li>
 <li>The state is kept in <code>signin.json</code> in the state folder. <code>swarmup usage</code>, <code>swarmup waits</code>, the
 <strong>Agents</strong> view and the <strong>Board</strong> show &quot;signed out&quot; as the reason work waits.</li>
 <li>The chat answers a message it cannot send with how to sign in; your messages wait and go out
@@ -531,6 +531,19 @@ clears the count. To try again sooner, pause and resume the provider in <strong>
 <strong>Resume</strong> or <code>swarmup daemon resume</code>, restart swarmupd, or send a chat message: chat turns skip the
 wait and never count. Usage limits have their own pause and do not count. The count lives in
 memory only.</li>
+<li><strong>Stuck tasks.</strong> A run that ends without finishing frees its task, and the release note quotes
+the run log: its error lines and the agent&#39;s last message. When <code>stuck_runs</code> runs of a task in
+a row (default 3; <code>0</code> turns it off) end without finishing and with no work on the task between
+them (no progress, comment, ask, review or person; the lease renewals swarmupd writes while a
+run lives don&#39;t count as work), swarmupd stops starting it. It blocks the task for a waking,
+active PM of another provider than the stuck run&#39;s, and not signed out, else for you; never for
+a PM of the stuck run&#39;s own provider, which may be the broken one. It quotes the log with
+secret-looking lines removed, and files a <code>p1</code> finding owned by that PM. The same failure on
+other tasks is added to the open finding, so a broken sandbox is one finding. Unblock the task
+after the fix. This catches runs that fail in a way the failed-start count misses: codex:engineer
+ran 171 times on AO-0173, each run about a minute long and ending with exit 0 while its sandbox
+refused every shell call (AO-0173). Runs a person stopped, and providers paused for a sign-in, a
+usage limit or failed starts, do not trip it.</li>
 <li>Limits are per PC. A provider account spans PCs: with swarmupd on two PCs, set <code>usage_pause_at</code> or
 <code>max_live</code> on each to share it.</li>
 <li><code>swarmup usage</code> and <code>GET /api/usage</code> show each provider&#39;s windows, live runs and whether it is
@@ -554,6 +567,7 @@ opsd:
   signed_out_handoff_minutes: 15 # hand named work of a signed-out provider to another; 0: never
   budget_minutes: 180
   wake_cooldown_minutes: 10
+  stuck_runs: 3 # block a task for a PM after this many unfinished runs in a row; 0: never
   sync: true # commit, pull and push each root when its sync policy says so
   seeded: 1 # the defaults were written once; from then on runtimes lists every provider
   runtimes:
