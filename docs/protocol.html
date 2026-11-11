@@ -261,7 +261,7 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 </tr>
 <tr>
 <td><code>kb [WORDS...] [--topic T]</code>, <code>kb --read TOPIC/SLUG</code></td>
-<td>Searches notes (every word must match; title and tag hits rank first), or prints one. Exit 3 when nothing matches.</td>
+<td>Searches notes (every word must match; title and tag hits rank first), or prints one. Exit 3 when nothing matches. <code>--read</code> by an actor with a task in progress writes <code>kb-reads/&lt;yyyy-mm&gt;/&lt;ulid&gt;-&lt;actor&gt;.json</code> (actor, note, task when known, time) for the replay; it is no task event and changes no state.</td>
 </tr>
 </tbody></table>
 <h3 id="channels-and-votes"><a class="anchor" href="#channels-and-votes" aria-hidden="true">#</a>Channels and votes</h3>
