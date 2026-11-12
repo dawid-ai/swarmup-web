@@ -481,6 +481,19 @@ checked. When such a checkout holds a writing run and no live or ending run work
 which run waits, the checkout and its first changed file. It posts again for that checkout only
 after it was clean once. A checkout with a live run gets no post: the changes may be that run&#39;s
 work, which its wrap-up commits.</li>
+<li><strong>No run beside a session outside swarmupd.</strong> A session of an agent that swarmupd did not start
+(one with no <code>SWARMUP_RUN</code>, such as an agent CLI you opened yourself) often works on after its
+claim ended, say on a change request for the work it sent to review. When the task&#39;s newest
+claim is one such a session made on this PC, swarmupd starts no run on the task, and wakes no
+inbox run for an item about it, until <code>outside_session_minutes</code> (default 30; <code>0</code> never waits)
+have passed since that agent&#39;s last event on the task. <code>swarmup waits</code> says
+<code>a session of &lt;agent&gt; outside swarmupd worked on it &lt;n&gt; min ago and may still do</code>. The wait
+ends at once when that session releases, hands off or closes the task, or when anyone assigns,
+hands off or delegates it. A session that goes on takes the task with <code>swarmup start</code>: its
+live claim keeps the task out of swarmupd&#39;s queue, and a run that holds a task refuses that
+session&#39;s <code>start</code>, <code>progress</code>, <code>review</code> and other finishing commands (see
+<a href="protocol.html">protocol.md</a>, Claims across machines). An inbox run that started for other items
+still reads the whole inbox.</li>
 <li><strong>What a run leaves goes to a branch.</strong> Codex runs in a sandbox that keeps <code>.git</code> read-only, so
 they cannot commit in their checkout (only in a worktree, see Runtimes). When a top-level run of a role that writes ends and its checkout has
 changes outside task stores, swarmupd commits them with the normal git on a new branch
@@ -635,6 +648,7 @@ opsd:
   signed_out_handoff_minutes: 15 # hand named work of a signed-out provider to another; 0: never
   budget_minutes: 180
   wake_cooldown_minutes: 10
+  outside_session_minutes: 30 # no run on a task a session outside swarmupd just worked on; 0: never
   stuck_runs: 3 # block a task for a PM after this many unfinished runs in a row; 0: never
   sync: true # commit, pull and push each root when its sync policy says so
   reclaim_worktrees: true # remove a closed task&#39;s clean worktree; its branch stays

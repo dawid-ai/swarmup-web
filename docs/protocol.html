@@ -547,12 +547,14 @@ order. A clock that runs behind cannot make a late push win.</li>
 <code>renew</code> and <code>checkpoint</code> under it do not extend the winner&#39;s lease.</li>
 <li>Each clone remembers the tokens of the claims it made (<code>.ops/claims/&lt;id&gt;.json</code>, never committed),
 with the supervised run that made it (<code>SWARMUP_RUN</code>). The same agent id on two machines is two
-runs, and so are two live runs of one agent id on one machine: a caller with <code>SWARMUP_RUN</code> holds a
-claim only if the record names its run. On the clone whose claim lost, or in another run,
-<code>swarmup start</code>, <code>progress</code> and <code>release</code> refuse with &quot;held by ... under another claim&quot;. A claim
-made without a run belongs to no run until swarmupd binds it to the run it launches on it. A person
-or swarmupd acting as the agent without <code>SWARMUP_RUN</code> is not checked for a run; swarmupd renews and
-releases as the run, so it never touches a claim another run took over.</li>
+runs, and so are two sessions of one agent id on one machine: a caller with <code>SWARMUP_RUN</code> holds a
+claim only if the record names its run, and a caller without it (a session outside swarmupd)
+only if the record names no run. On the clone whose claim lost, or in another session,
+<code>swarmup start</code>, <code>progress</code>, <code>release</code> and the finishing commands refuse with &quot;held by ...
+under another claim&quot;, also when the task names that agent as its owner; <code>checkpoint</code> still
+records the owner&#39;s notes without renewing the claim, and <code>--force</code> overrides the check. A
+claim made without a run belongs to no run until swarmupd binds it to the run it launches on
+it. swarmupd renews and releases as the run, so it never touches a claim another run took over.</li>
 <li><code>swarmup sync</code> prints each lost claim. Under <code>coordinated</code> sync, <code>swarmup claim</code> reports it at once:
 &quot;lost the claim on X to Y; pick other work&quot;. Do not release a lost claim; the task belongs to
 the winner. swarmupd stops a live run whose claim lost (reason <code>lost-claim</code>) and writes no release.</li>
