@@ -89,7 +89,14 @@ park: any open state --&gt; parked        reopen: done or parked --&gt; todo
 extend it by <code>leases.work_minutes</code> (240). After the lease runs out, the task shows as
 <code>claimed(stale)</code> or <code>in-progress(stale)</code> and anyone allowed may claim it.</li>
 <li><strong>Dependencies.</strong> A task blocked on other tasks shows as <code>todo(unblocked)</code> once all of them are
-done or parked. The next claim records an <code>unblock</code> event first.</li>
+done or parked. The next claim records an <code>unblock</code> event first. On a machine where swarmupd
+merges the dependency&#39;s root (<code>opsd.merge.&lt;root name&gt;</code>), a dependency that a review approved,
+and whose review request names a branch, counts only after swarmupd writes one of two events to
+it as <code>opsd:merge</code>: the <code>merge</code> event, or a comment with <code>no_merge</code> that says it has nothing to
+merge. Until then the task stays <code>blocked</code>, and <code>swarmup show</code> lists the dependency under
+<code>waits for the merge of</code>. A merge that fails frees nothing: swarmupd sends the dependency back,
+or leaves it done with a comment to the human, and the task keeps waiting until the work is
+merged after a new review or someone runs <code>swarmup unblock</code>.</li>
 </ul>
 <h2 id="commands"><a class="anchor" href="#commands" aria-hidden="true">#</a>Commands</h2>
 <h3 id="find-and-own-work"><a class="anchor" href="#find-and-own-work" aria-hidden="true">#</a>Find and own work</h3>
@@ -414,6 +421,12 @@ a final full stop), or an approving verdict. <code>swarmup report</code> sums th
 given, tasks unblocked (total and median per answer), the median wait, recommendations accepted, and
 the five answers that unblocked the most tasks. Events written before these fields count as given
 but not in the sums.</p>
+<p>Where an approval leaves tasks waiting for swarmupd&#39;s merge (see &quot;State machine&quot;), the
+approving <code>verdict</code> lists only the tasks it lets move at once, such as open children. swarmupd&#39;s
+<code>merge</code> event, or its <code>no_merge</code> comment, then carries <code>freed</code> and <code>freed_indirect</code> for the tasks
+that waited for the merge, and <code>swarmup report</code> adds them to that approval&#39;s count when both the
+approval and that event lie in the report window. A note on a
+failed merge frees nothing and records nothing.</p>
 <p>The app turns <code>AO-0014</code>, <code>root/AO-0014</code> and <code>AO-0014#&lt;event id&gt;</code> in any text into links that open
 the task, scrolled to that event, drawn as chips with the task&#39;s status and title. People insert
 them with the <code>#</code> picker in the app&#39;s message boxes, which writes the same plain text, or
@@ -478,7 +491,8 @@ PR: https://github.com/org/repo/pull/12
 <code>review</code> (delegate), <code>ref</code> (finding: the new task; learn: the note), <code>token</code> (claim: a random id
 for this claim), <code>holder</code> (start, progress, renew, checkpoint, release: the token of the claim the
 writer acted under), <code>commit</code>, <code>branch</code> and <code>into</code> (merge: the commit the base moved to, the
-branch the work came from, the base), <code>keep_wait</code> (assign: a blocked task keeps its open question
+branch the work came from, the base), <code>no_merge</code> (comment by <code>opsd:merge</code>: swarmupd has nothing to
+merge for the approved task, so tasks blocked on it go on), <code>keep_wait</code> (assign: a blocked task keeps its open question
 or task wait under the new owner; <code>assign</code> writes it whenever the task is blocked, and triage when
 it assigns without answering; <code>answer</code> or <code>unblock</code> drop the wait on purpose, and <code>handoff</code> always
 clears it). Types that change state:

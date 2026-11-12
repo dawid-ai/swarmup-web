@@ -284,8 +284,9 @@ repo the store is in, as before.</p>
 <li><p><strong>Reclaiming task worktrees (AO-0230).</strong> Every 10 minutes, and at swarmupd&#39;s first tick,
 swarmupd removes the worktree <code>out/wt-&lt;ID&gt;</code> of each task that has been <code>done</code> or <code>parked</code> for
 <code>opsd.reclaim_after_minutes</code> (60). It removes a worktree only when no run works in it, no merge
-of the task waits, <code>git status</code> shows no change, and its commit is on a branch. The branch
-stays. swarmupd notes on the task (as <code>opsd:worktree</code>) which branch and commit hold the work,
+of the task waits, <code>git status</code> shows no change, and its commit is on a branch. A merge waits
+from the approval until swarmupd records the merge or notes that it has nothing to merge; a
+note that the merge failed does not end the wait, so that worktree stays. The branch stays. swarmupd notes on the task (as <code>opsd:worktree</code>) which branch and commit hold the work,
 and a reopened task gets its worktree again on that branch. A worktree that fails a check stays,
 with one warning per reason in the swarmupd log. swarmupd deletes the folder with Node&#39;s
 <code>fs.rm</code>, then runs <code>git worktree prune</code>. It never uses <code>git worktree remove</code>, because Git for
@@ -779,6 +780,15 @@ changes are never overwritten, else by moving the ref only if it did not move. W
 moved meanwhile (a task store sync, another merge), swarmupd rebases again, and runs the checks
 again only if code changed. Then it runs <code>build</code> in <code>checkout</code> and adds a <code>merge</code> event
 (<code>opsd:merge</code>) with the new commit to the task.</li>
+<li><strong>Tasks blocked on the work.</strong> A task blocked <code>--on</code> an approved task stays blocked until
+swarmupd records the merge on that task, so no run starts on a base that lacks the work. A merge
+that fails keeps them blocked: a conflict or a failed check sends the approved task back, and a
+merge swarmupd cannot do (the commit or the base is missing, the base did not move) leaves a
+comment for the human. When swarmupd has nothing to merge for an approved task that others wait
+on (approved before the merge setting, or no review request names a branch or commit), it says
+so in a comment marked <code>no_merge</code>, which frees them. When the review requests name a commit and
+a branch that the repo lacks, the tasks stay blocked and swarmupd tells the human. To free a
+task by hand, run <code>swarmup unblock ID</code>.</li>
 <li><strong>New dependencies.</strong> The checks install packages in swarmupd&#39;s worktree, not in <code>checkout</code>.
 When the merge changed a <code>package-lock.json</code> or <code>npm-shrinkwrap.json</code>, swarmupd runs <code>install</code>
 before <code>build</code> in each directory of <code>checkout</code> whose lockfile changed (<code>checkout</code> itself for a
