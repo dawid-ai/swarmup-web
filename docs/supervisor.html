@@ -772,10 +772,23 @@ root lockfile, <code>site</code> for <code>site/package-lock.json</code>), so th
 <code>install</code> is <code>npm install --no-save --no-audit --no-fund</code> in each of those directories that
 still has an npm lockfile; <code>[]</code> turns it off. The default is not <code>npm ci</code>: that deletes
 <code>node_modules</code> first, and when swarmupd or the app runs from <code>checkout</code>, files they lock stop it
-halfway and leave both broken. When a <code>build</code> command fails and <code>install</code> did not run in
-<code>checkout</code> itself, swarmupd runs it there and builds once more: <code>node_modules</code> may be gone,
-behind a lockfile another commit changed, or in the middle of an install. A failed install is
-the checkout&#39;s problem, not the merged code&#39;s: the human gets a comment on the task with the
+halfway and leave both broken. <code>npm install</code> can leave out, or remove, optional platform
+packages that the lockfile lists (such as <code>lightningcss-win32-x64-msvc</code>) and still say
+<code>up to date</code>. So after the default install, swarmupd compares the lockfile with <code>node_modules</code>
+and installs by name each optional package that names this platform in <code>os</code>, <code>cpu</code> or <code>libc</code>
+and is missing from the top of <code>node_modules</code>; the merge event shows that command when it ran.
+An optional package with no such list, or with exclusions only (<code>!aix</code>), stays optional: npm
+may leave it out on purpose, and swarmupd does not install it by name. Nor does it install a
+package that the lockfile takes from git, a file or a tarball URL: by name, npm would fetch
+another package. A package counts as from the registry only when its <code>resolved</code> URL is
+<code>&lt;registry&gt;/&lt;name&gt;/-/&lt;name&gt;-&lt;version&gt;.tgz</code> for the registry that <code>npm config get registry</code> (or
+<code>@scope:registry</code>) names in that directory, or when the lockfile has no <code>resolved</code> for it; a
+mirror on another host, or a registry with another tarball layout, gets no repair. A configured
+<code>install</code>
+gets no such step. When a <code>build</code> command fails and <code>install</code> did not run in <code>checkout</code>
+itself, swarmupd runs it there and builds once more: <code>node_modules</code> may be gone, behind a
+lockfile another commit changed, or in the middle of an install. A failed install is the
+checkout&#39;s problem, not the merged code&#39;s: the human gets a comment on the task with the
 output, and the task stays closed.</li>
 <li><strong>Seeing it.</strong> The merge under way shows on the app&#39;s <strong>Board</strong> and <strong>Agents</strong> views, in
 <code>swarmup runs</code> and <code>swarmup waits</code>, and as <code>merge</code> in <code>GET /api/waits</code>: the task, the base, the step
