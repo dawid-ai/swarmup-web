@@ -755,7 +755,7 @@ commands swarmupd runs are set on each machine and never arrive through a sync.<
       base: v2 # the branch approved work goes into
       checkout: &#39;C:\dev\my-project&#39; # where the base is built; default: the root&#39;s git top
       checks: # run on the rebased work, in swarmupd&#39;s own worktree
-        - npm install --no-audit --no-fund
+        - npm ci --no-audit --no-fund
         - npm run typecheck
         - npm run lint
         - npm test
@@ -794,6 +794,8 @@ so in a comment marked <code>no_merge</code>, which frees them. When the review 
 a branch that the repo lacks, the tasks stay blocked and swarmupd tells the human. To free a
 task by hand, run <code>swarmup unblock ID</code>.</li>
 <li><strong>New dependencies.</strong> The checks install packages in swarmupd&#39;s worktree, not in <code>checkout</code>.
+Use <code>npm ci</code> there, as in the example: it installs the lockfile as written and never rewrites
+it, while a plain <code>npm install</code> saves the tree it resolved and can drop lockfile entries.
 When the merge changed a <code>package-lock.json</code> or <code>npm-shrinkwrap.json</code>, swarmupd runs <code>install</code>
 before <code>build</code> in each directory of <code>checkout</code> whose lockfile changed (<code>checkout</code> itself for a
 root lockfile, <code>site</code> for <code>site/package-lock.json</code>), so the build sees the new packages. Unset,
