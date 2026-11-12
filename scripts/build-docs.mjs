@@ -128,11 +128,13 @@ for (const page of pages.values()) {
     gfm: true,
     walkTokens: (token) => {
       if (token.type === 'link' || token.type === 'image') token.href = rewrite(page, token.href);
-      // Raw HTML in Markdown, such as a centered <img>: its src and href get the same treatment.
+      // Raw HTML in Markdown, such as a centered <img> or a <picture> with a <source srcset>: its
+      // src, href and srcset get the same treatment.
       if (token.type === 'html') {
         token.text = token.text.replace(
-          /\b(src|href)="([^"]*)"/g,
-          (_m, attr, url) => `${attr}="${rewrite(page, url)}"`,
+          /\b(src|href|srcset)="([^"]*)"/g,
+          (_m, attr, value) =>
+            `${attr}="${attr === 'srcset' ? rewriteSrcset(page, value) : rewrite(page, value)}"`,
         );
       }
     },
@@ -180,6 +182,17 @@ function rewrite(page, href) {
   }
   const kind = statSync(abs).isDirectory() ? 'tree' : 'blob';
   return `${repoUrl}/${kind}/${branch}/${encodeURI(target)}${suffix}`;
+}
+
+/**
+ * Rewrites every URL of a srcset value (`a.png`, or `a.png 1x, b.png 2x`) and keeps the
+ * descriptors. As in HTML, a URL ends at white space, or at a comma that white space follows.
+ */
+function rewriteSrcset(page, value) {
+  return value.replace(
+    /([^\s,]\S*?)(?=,*(?:\s|$))(,+|\s+[^,]*)?/g,
+    (_m, url, rest = '') => rewrite(page, url) + rest,
+  );
 }
 
 function splitHash(href) {
