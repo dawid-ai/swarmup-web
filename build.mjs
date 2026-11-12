@@ -9,7 +9,8 @@
 //   docs/           the docs site, built by scripts/build-docs.mjs from README.md and docs/
 //   404.html        sends old docs addresses (/protocol.html) to their new place under /docs/
 //   CNAME           the custom domain
-//   site.css, site.js, favicon.svg, og.png, brand/, vendor/   everything under assets/, copied
+//   site.css, site.js, favicon.svg, apple-touch-icon.png, og.png, brand/, vendor/
+//                   everything under assets/, copied
 //
 // The download page never names a fixed version. It shows the release the build found, and a
 // small script asks the GitHub API again in the browser, so a release published after the build
@@ -295,7 +296,14 @@ const FONTS =
   'https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Big+Shoulders+Display:wght@700;800;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap';
 // The picture a shared link shows. Optional, like the founder page.
 const OG_IMAGE = existsSync(join(assets, 'og.png')) ? 'og.png' : '';
+// Its size, read from the PNG header, so a card shows at full size on the first share, before
+// the service that shows it has fetched the file. The alt text describes the brand kit's card.
+const OG_SIZE = OG_IMAGE ? readFileSync(join(assets, OG_IMAGE)).subarray(16, 24) : null;
+const OG_ALT =
+  'The SwarmUp mark, four rounded tiles in pink, orange, cyan and violet, next to the headline: Your coding agents need a manager. It shouldn’t be you.';
 const ICO = existsSync(join(assets, 'favicon.ico'));
+// The icon iOS puts on a home screen: 180 x 180 and opaque, because iOS paints transparency black.
+const TOUCH_ICON = existsSync(join(assets, 'apple-touch-icon.png'));
 
 /**
  * One page of the site. `main`: `prose` is a text column, `wide` a page that lays out its own
@@ -328,7 +336,12 @@ function layout({
   // A shared link shows the page title, its description and the site's card image.
   const image = OG_IMAGE
     ? `<meta property="og:image" content="https://${domain}/${OG_IMAGE}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="${OG_SIZE.readUInt32BE(0)}">
+<meta property="og:image:height" content="${OG_SIZE.readUInt32BE(4)}">
+<meta property="og:image:alt" content="${escapeHtml(OG_ALT)}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="${escapeHtml(OG_ALT)}">
 `
     : '';
   const meta = description
@@ -353,7 +366,12 @@ ${
     ? `<link rel="alternate icon" href="${href('favicon.ico')}" sizes="any">
 `
     : ''
-}<link rel="preconnect" href="https://fonts.googleapis.com">
+}${
+    TOUCH_ICON
+      ? `<link rel="apple-touch-icon" href="${href('apple-touch-icon.png')}">
+`
+      : ''
+  }<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${FONTS}">
 <link rel="stylesheet" href="${href('site.css')}">
@@ -585,7 +603,7 @@ write(
 </script>
 `,
   }).replace(
-    /(?:href|src)="(?:\.\/)?(site\.css|favicon\.svg|favicon\.ico|brand\/[^"]+|index\.html|download\.html|install\.html|changelog\.html|founder\.html|docs\/index\.html)"/g,
+    /(?:href|src)="(?:\.\/)?(site\.css|favicon\.svg|favicon\.ico|apple-touch-icon\.png|brand\/[^"]+|index\.html|download\.html|install\.html|changelog\.html|founder\.html|docs\/index\.html)"/g,
     (m, path) => `${m.slice(0, m.indexOf('=') + 1)}"/${path}"`,
   ),
 );

@@ -181,6 +181,13 @@ describe('website', () => {
     expect(page(d, '404.html')).toContain('<img src="/brand/lockup-ink.png"');
     expect(existsSync(join(d, 'dist', 'site', 'brand', 'lockup-ink.png'))).toBe(true);
     expect(existsSync(join(d, 'dist', 'site', 'favicon.ico'))).toBe(true);
+    // iOS takes its home screen icon from the site root on every page.
+    expect(page(d, 'index.html')).toContain(
+      '<link rel="apple-touch-icon" href="apple-touch-icon.png">',
+    );
+    expect(page(d, 'docs/protocol.html')).toContain('href="../apple-touch-icon.png"');
+    expect(page(d, '404.html')).toContain('href="/apple-touch-icon.png"');
+    expect(existsSync(join(d, 'dist', 'site', 'apple-touch-icon.png'))).toBe(true);
     const check = node('check-docs-links.mjs', join(d, 'dist', 'site'));
     expect(check.code, check.out).toBe(0);
   });
@@ -248,6 +255,10 @@ describe('website', () => {
     expect(home).toContain('<meta property="og:url" content="https://swarmup.tech/">');
     expect(home).toContain('<meta property="og:image" content="https://swarmup.tech/og.png">');
     expect(home).toContain('<meta name="twitter:card" content="summary_large_image">');
+    // The card says how large its image is and what it shows.
+    expect(home).toContain('<meta property="og:image:width" content="1200">');
+    expect(home).toContain('<meta property="og:image:height" content="630">');
+    expect(home).toMatch(/<meta property="og:image:alt" content="The SwarmUp mark[^"]+">/);
     expect(existsSync(join(d, 'dist', 'site', 'og.png'))).toBe(true);
     // A page without a description, and the docs, carry no card.
     expect(page(d, 'install.html')).not.toContain('og:title');
