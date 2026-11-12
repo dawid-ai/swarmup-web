@@ -770,7 +770,11 @@ root lockfile, <code>site</code> for <code>site/package-lock.json</code>), so th
 <code>install</code> is <code>npm install --no-save --no-audit --no-fund</code> in each of those directories that
 still has an npm lockfile; <code>[]</code> turns it off. The default is not <code>npm ci</code>: that deletes
 <code>node_modules</code> first, and when swarmupd or the app runs from <code>checkout</code>, files they lock stop it
-halfway and leave both broken. A failed install counts as a failed build.</li>
+halfway and leave both broken. When a <code>build</code> command fails and <code>install</code> did not run in
+<code>checkout</code> itself, swarmupd runs it there and builds once more: <code>node_modules</code> may be gone,
+behind a lockfile another commit changed, or in the middle of an install. A failed install is
+the checkout&#39;s problem, not the merged code&#39;s: the human gets a comment on the task with the
+output, and the task stays closed.</li>
 <li><strong>Seeing it.</strong> The merge under way shows on the app&#39;s <strong>Board</strong> and <strong>Agents</strong> views, in
 <code>swarmup runs</code> and <code>swarmup waits</code>, and as <code>merge</code> in <code>GET /api/waits</code>: the task, the base, the step
 (<code>rebase</code>, <code>checks</code>, <code>waiting</code> for a writing run, <code>build</code>), the command running now with its
@@ -782,7 +786,8 @@ branch that changes task store files sends the task back to its owner: a <code>c
 the output, and the whole output in <code>&lt;state&gt;/merge/logs/</code>. Lines of the output that look like a
 secret (the patterns <code>swarmup</code> refuses in events), and private key blocks whole, are taken out
 before either is written. A failed build comes after the base
-moved: swarmupd records the merge and sends the task back to fix it in a new commit. A merge swarmupd
+moved: swarmupd records the merge and, when the build still fails after an install in <code>checkout</code>,
+sends the task back to fix it in a new commit. A merge swarmupd
 cannot do (the branch or commit is missing, the base kept moving, local changes in the way) gets
 a comment to the root&#39;s human, and swarmupd does not try that task again until it changes.</li>
 <li><strong>When a step hangs.</strong> A check or build command stops at <code>timeout_minutes</code>, with everything it
