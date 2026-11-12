@@ -8,8 +8,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "node build.mjs && node scripts/check-docs-links.mjs dist/site",
-    "build:offline": "node build.mjs --offline && node scripts/check-docs-links.mjs dist/site",
+    "build": "node build.mjs --out dist/site && node scripts/check-docs-links.mjs dist/site",
+    "build:offline": "node build.mjs --offline --out dist/site && node scripts/check-docs-links.mjs dist/site",
     "schematic": "node schematic.mjs",
     "test": "vitest run",
     "lint": "prettier --check ."

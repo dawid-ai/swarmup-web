@@ -36,7 +36,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: node build.mjs && node scripts/check-docs-links.mjs dist/site
+      - run: node build.mjs --out dist/site && node scripts/check-docs-links.mjs dist/site
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: github.event_name != 'pull_request'
