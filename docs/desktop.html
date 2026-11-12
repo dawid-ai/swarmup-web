@@ -20,7 +20,7 @@
 <a href="../install.html">Install</a>
 <a href="../docs/index.html" aria-current="page">Docs</a>
 <a href="../changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="../download.html">Download</a>
 </header>
@@ -28,7 +28,7 @@
 <nav class="side" aria-label="Docs">
 <a class="site" href="index.html">Docs</a>
 <ul><li><a href="index.html">Overview</a></li></ul>
-<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html" class="current" aria-current="page">Desktop app</a></li><li><a href="swarmup-rename.html">SwarmUp rename: name inventory</a></li></ul>
+<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html" class="current" aria-current="page">Desktop app</a></li></ul>
 </nav>
 <article class="prose">
 <h1 id="desktop-app"><a class="anchor" href="#desktop-app" aria-hidden="true">#</a>Desktop app</h1>
@@ -62,7 +62,7 @@ npm run desktop   # builds the core, swarmupd and the UI, then opens the app
 </code></pre>
 <p>On the first start, when the user config has no <code>me</code>, the app asks for your id (default
 <code>human:&lt;OS user name&gt;</code>) and the data roots to load (default: the root it was started in), then
-writes the user config (<code>%APPDATA%\agent-ops\config.yml</code>, <code>~/.config/agent-ops/config.yml</code> or
+writes the user config (<code>%APPDATA%\swarmup\config.yml</code>, <code>~/.config/swarmup/config.yml</code> or
 <code>SWARMUP_CONFIG</code>) and starts <code>swarmupd</code>. An existing config keeps everything, comments and roots
 included, and only gains a missing <code>me</code>. If a <code>swarmupd</code> that runs no agents is
 already up, the app restarts it to load the config; one that runs agents keeps going, and the app
@@ -312,12 +312,12 @@ shows a drawn, moving picture; when <code>ffprobe</code> is on <code>PATH</code>
 <code>--software</code> to turn the GPU off, <code>--seconds N</code> or <code>--aspects 16x9</code> for a shorter run, and
 <code>--keep</code> to keep the clips.</p>
 
-<footer class="source"><a href="https://github.com/dawid-ai/agent-ops/blob/main/docs/desktop.md">View source on GitHub</a></footer>
+<footer class="source"><a href="https://github.com/dawid-ai/swarmup/blob/main/docs/desktop.md">View source on GitHub</a></footer>
 </article>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 </body>
 </html>

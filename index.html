@@ -21,7 +21,7 @@
 <a href="install.html">Install</a>
 <a href="docs/index.html">Docs</a>
 <a href="changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="download.html">Download</a>
 </header>
@@ -30,7 +30,7 @@
      are the screenshots in docs/media/. site.js steps the schematic through its four stages; without
      it all four steps show and the schematic stays on the first. The schematic SVG is generated from
      node and line lists: change those lists, not the paths by hand. The AO-0175 excerpt and the
-     numbers are copied from our own task store and `ops report`; update them together, with the
+     numbers are copied from our own task store and `swarmup report`; update them together, with the
      date range. -->
 <section class="hero">
   <div class="wrap hero-grid">
@@ -446,7 +446,7 @@
         Read it, grep it, diff it. Several machines share one queue through a git remote, and the
         history is yours to keep.
       </p>
-      <pre class="tree"><code>.agent-ops/tasks/AO-0175/
+      <pre class="tree"><code>tasks/AO-0175/
 ├── task.md
 └── events/
     ├── 01M6ZP9T…-claude-engineer.md   claim
@@ -506,7 +506,7 @@ the regression test.</code></pre>
       <span style="--c: var(--codex); flex-grow: 349">Codex · 349</span>
     </div>
     <p class="fine">
-      Each provider reviews the other's work. Numbers from <code>ops report --days 30</code>.
+      Each provider reviews the other's work. Numbers from <code>swarmup report --days 30</code>.
     </p>
   </div>
 </section>
@@ -577,7 +577,7 @@ the regression test.</code></pre>
       <figure>
         <img
           src="media/inbox.png"
-          alt="The inbox with one question to answer and two findings to triage"
+          alt="The inbox with one question to answer, the agent's recommended pick and a button to accept it"
           loading="lazy"
         />
         <figcaption>
@@ -669,7 +669,7 @@ the regression test.</code></pre>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 </body>
 </html>

@@ -20,7 +20,7 @@
 <a href="install.html">Install</a>
 <a href="docs/index.html">Docs</a>
 <a href="changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="download.html">Download</a>
 </header>
@@ -28,7 +28,7 @@
 <h1>Download SwarmUp</h1>
 <p class="lead">One installer sets up the desktop app, the orchestrator that runs your agents in the background, and the command-line tool. It installs for your user only and updates itself.</p>
 <div id="release">
-<p class="version">Latest release: <strong>v0.2.0-beta.8</strong> (pre-release, 2026-11-11)</p><p><a class="button" href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.8/SwarmUp-Setup.exe">Download for Windows</a></p><p class="files">Files in this release:</p><ul><li><a href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.8/SwarmUp-Setup.exe">SwarmUp-Setup.exe</a> (117 MB)</li></ul><p><a href="https://github.com/dawid-ai/agent-ops/releases/tag/v0.2.0-beta.8">Release notes on GitHub</a></p>
+<p class="version">Latest release: <strong>v0.3.0-beta.1</strong> (pre-release, 2026-11-12)</p><p><a class="button" href="https://github.com/dawid-ai/swarmup/releases/download/v0.3.0-beta.1/SwarmUp-Setup.exe">Download for Windows</a></p><p class="files">Files in this release:</p><ul><li><a href="https://github.com/dawid-ai/swarmup/releases/download/v0.3.0-beta.1/SwarmUp-Setup.exe">SwarmUp-Setup.exe</a> (117 MB)</li></ul><p><a href="https://github.com/dawid-ai/swarmup/releases/tag/v0.3.0-beta.1">Release notes on GitHub</a></p>
 </div>
 <h2>Before you install</h2>
 <ul>
@@ -36,11 +36,11 @@
 <li>Git, and at least one coding agent from your AI provider, signed in: today <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> or <a href="https://github.com/openai/codex">Codex</a>.</li>
 <li>The installer is not code-signed yet, so Windows SmartScreen asks first: choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
 </ul>
-<p>Next: the <a href="install.html">install guide</a> walks you from the installer to your first agent task. Every release, with its notes, is on <a href="https://github.com/dawid-ai/agent-ops/releases">GitHub Releases</a>.</p>
+<p>Next: the <a href="install.html">install guide</a> walks you from the installer to your first agent task. Every release, with its notes, is on <a href="https://github.com/dawid-ai/swarmup/releases">GitHub Releases</a>.</p>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 <script>
 (function () {
@@ -106,13 +106,13 @@
     '</p>'
   );
 };
-  var shown = "v0.2.0-beta.8";
-  fetch('https://api.github.com/repos/dawid-ai/agent-ops/releases?per_page=20', {
+  var shown = "v0.3.0-beta.1";
+  fetch('https://api.github.com/repos/dawid-ai/swarmup/releases?per_page=20', {
     headers: { accept: 'application/vnd.github+json' }
   }).then(function (res) { return res.ok ? res.json() : null; }).then(function (list) {
     var rel = list && pickRelease(list);
     if (rel && rel.tag !== shown) {
-      document.getElementById('release').innerHTML = releaseHtml(rel, "https://github.com/dawid-ai/agent-ops/releases");
+      document.getElementById('release').innerHTML = releaseHtml(rel, "https://github.com/dawid-ai/swarmup/releases");
     }
   }).catch(function () {});
 })();

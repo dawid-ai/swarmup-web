@@ -20,7 +20,7 @@
 <a href="../install.html">Install</a>
 <a href="../docs/index.html" aria-current="page">Docs</a>
 <a href="../changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="../download.html">Download</a>
 </header>
@@ -28,7 +28,7 @@
 <nav class="side" aria-label="Docs">
 <a class="site" href="index.html">Docs</a>
 <ul><li><a href="index.html">Overview</a></li></ul>
-<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html" class="current" aria-current="page">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li><li><a href="swarmup-rename.html">SwarmUp rename: name inventory</a></li></ul>
+<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html" class="current" aria-current="page">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li></ul>
 </nav>
 <article class="prose">
 <h1 id="supervisor-swarmupd"><a class="anchor" href="#supervisor-swarmupd" aria-hidden="true">#</a>Supervisor (swarmupd)</h1>
@@ -96,7 +96,7 @@ run, or install a new build of the app when it runs the installed app.</p>
 Sync, notifications, presence and the API keep working.</p>
 <p>The <code>swarmupd</code> command (<code>packages/supervisor/dist/main.js</code>) takes the same verbs. Start swarmupd from a
 folder inside a data root, or list roots in the user config, so it finds the tasks.</p>
-<p>State lives in <code>~/.agent-ops/swarmupd/</code> (or <code>SWARMUP_STATE_DIR</code>) and is never committed:</p>
+<p>State lives in <code>~/.swarmup/swarmupd/</code> (or <code>SWARMUP_STATE_DIR</code>) and is never committed:</p>
 <table>
 <thead>
 <tr>
@@ -221,7 +221,7 @@ the run to read it by path and to run <code>git -C &lt;checkout&gt;</code>. If t
 gets <code>--sandbox read-only</code> in its checkout instead.</li>
 <li>The working folder is <code>--cwd</code>, then the agent&#39;s <code>cwd</code> in the config, then the top of the task&#39;s
 repo.</li>
-<li>When the working folder is a data root&#39;s checkout (the git checkout that holds a <code>.agent-ops/</code>
+<li>When the working folder is a data root&#39;s checkout (the git checkout that holds a <code>.swarmup/</code>
 folder swarmupd knows), the branch checked out there carries the task store. The run&#39;s prompt names
 the store branch (<code>sync.branch</code>, else the learned one) and tells the run never to run
 <code>git checkout</code> or <code>git switch</code> there, and to make code branches in a worktree inside the
@@ -435,7 +435,7 @@ different roots or their agents have their own checkout. Helpers work under thei
 neither are question runs or chat turns: a chat turn has <code>Edit</code> and <code>Write</code> denied, so it
 neither holds a checkout nor waits for one, whatever its role.</li>
 <li><strong>A writing run starts on a clean checkout.</strong> While a git checkout has changed tracked files or
-untracked files outside task stores (<code>.agent-ops/</code> and every root&#39;s folder), no run of a role
+untracked files outside task stores (<code>.swarmup/</code> and every root&#39;s folder), no run of a role
 that writes starts there; <code>swarmup waits</code> says <code>checkout has uncommitted changes in &lt;top&gt;</code> and
 names a file. Ignored files do not count. A checkout that is itself a task store is never
 checked. When such a checkout holds a writing run and no live or ending run works in it, swarmupd
@@ -583,8 +583,8 @@ order, with why each waits (the first limit in the way for each agent, or a revi
 and the <strong>Agents</strong> view shows the plan and each provider&#39;s usage.</li>
 </ul>
 <h2 id="config"><a class="anchor" href="#config" aria-hidden="true">#</a>Config</h2>
-<p>The <code>swarmupd</code> section of the user config (<code>%APPDATA%\agent-ops\config.yml</code>,
-<code>~/.config/agent-ops/config.yml</code> or <code>SWARMUP_CONFIG</code>):</p>
+<p>The <code>swarmupd</code> section of the user config (<code>%APPDATA%\swarmup\config.yml</code>,
+<code>~/.config/swarmup/config.yml</code> or <code>SWARMUP_CONFIG</code>):</p>
 <pre><code class="language-yaml">me: human:dawid
 opsd:
   port: 4747 # 0 picks a free port
@@ -616,7 +616,7 @@ opsd:
     qa: { per_project: 3, burst: 6 } # qa and reviewer only read
   agents:
     codex:engineer: { wake: true, budget: 2h, model: gpt-5-codex }
-    claude:qa: { wake: true, cwd: &#39;C:\dev\agent-ops&#39; }
+    claude:qa: { wake: true, cwd: &#39;C:\dev\my-project&#39; }
     claude:pm: {} # an agent with no settings of its own
   schedules:
     - name: digest
@@ -696,7 +696,7 @@ commands swarmupd runs are set on each machine and never arrive through a sync.<
   merge:
     v2: # the root&#39;s name
       base: v2 # the branch approved work goes into
-      checkout: &#39;C:\dev\agent-ops&#39; # where the base is built; default: the root&#39;s git top
+      checkout: &#39;C:\dev\my-project&#39; # where the base is built; default: the root&#39;s git top
       checks: # run on the rebased work, in swarmupd&#39;s own worktree
         - npm install --no-audit --no-fund
         - npm run typecheck
@@ -1025,12 +1025,12 @@ restart or another human-only action, use <code>swarmup ask</code>.</p>
 <code>SWARMUP_AGENT</code>. Errors return <code>{ &quot;error&quot;: &quot;...&quot; }</code> with 400 (bad input), 401, 403, 404 or 409
 (refused).</p>
 
-<footer class="source"><a href="https://github.com/dawid-ai/agent-ops/blob/main/docs/supervisor.md">View source on GitHub</a></footer>
+<footer class="source"><a href="https://github.com/dawid-ai/swarmup/blob/main/docs/supervisor.md">View source on GitHub</a></footer>
 </article>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 </body>
 </html>

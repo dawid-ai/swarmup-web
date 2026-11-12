@@ -20,7 +20,7 @@
 <a href="/install.html">Install</a>
 <a href="/docs/index.html">Docs</a>
 <a href="/changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="/download.html">Download</a>
 </header>
@@ -30,12 +30,12 @@
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 <script>
 (function () {
-  var docs = ["desktop.html","index.html","protocol.html","supervisor.html","swarmup-rename.html"];
-  var path = location.pathname.replace(/^\/(agent-ops|swarmup)\//, '/').replace(/^\//, '');
+  var docs = ["desktop.html","index.html","protocol.html","supervisor.html"];
+  var path = location.pathname.replace(/^\/swarmup\//, '/').replace(/^\//, '');
   if (path && docs.indexOf(path) >= 0) location.replace('/docs/' + path + location.hash);
 })();
 </script>

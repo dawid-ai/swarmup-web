@@ -20,7 +20,7 @@
 <a href="../install.html">Install</a>
 <a href="../docs/index.html" aria-current="page">Docs</a>
 <a href="../changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="../download.html">Download</a>
 </header>
@@ -28,7 +28,7 @@
 <nav class="side" aria-label="Docs">
 <a class="site" href="index.html">Docs</a>
 <ul><li><a href="index.html">Overview</a></li></ul>
-<p class="group">Guides</p><ul><li><a href="protocol.html" class="current" aria-current="page">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li><li><a href="swarmup-rename.html">SwarmUp rename: name inventory</a></li></ul>
+<p class="group">Guides</p><ul><li><a href="protocol.html" class="current" aria-current="page">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li></ul>
 </nav>
 <article class="prose">
 <h1 id="protocol"><a class="anchor" href="#protocol" aria-hidden="true">#</a>Protocol</h1>
@@ -232,7 +232,7 @@ done or parked. The next claim records an <code>unblock</code> event first.</li>
 </tr>
 <tr>
 <td><code>adopt [DIR] [--apply] [--name N] [--prefix P] [--human H] [--agents IDS]</code></td>
-<td>Surveys an existing repo (languages, frameworks, tests, build, lint, docs, CI) and prints a proposed project root: name, id prefix, role templates that fit the stack, and first tasks such as a baseline run and <code>AGENTS.md</code>. Writes nothing; <code>--apply</code> creates <code>.agent-ops/</code> with those roles and tasks, each blocked by the tasks it builds on. Refuses a repo that has a root.</td>
+<td>Surveys an existing repo (languages, frameworks, tests, build, lint, docs, CI) and prints a proposed project root: name, id prefix, role templates that fit the stack, and first tasks such as a baseline run and <code>AGENTS.md</code>. Writes nothing; <code>--apply</code> creates <code>.swarmup/</code> with those roles and tasks, each blocked by the tasks it builds on. Refuses a repo that has a root.</td>
 </tr>
 <tr>
 <td><code>new-project DIR --template T [--name N] [--prefix P] [--human H]</code>, <code>new-project --list</code></td>
@@ -616,7 +616,7 @@ step of a run. From phase 2, the supervisor runs it when a run ends.</li>
 </ul>
 <h2 id="master-repo-and-project-roots"><a class="anchor" href="#master-repo-and-project-roots" aria-hidden="true">#</a>Master Repo and project roots</h2>
 <ul>
-<li>A <strong>project root</strong> is <code>.agent-ops/</code> inside a project&#39;s repo: fast and small when you work one
+<li>A <strong>project root</strong> is <code>.swarmup/</code> inside a project&#39;s repo: fast and small when you work one
 project.</li>
 <li>The <strong>SwarmUp Master Repo</strong> is one private data repo for every project. Set it per machine
 with <code>swarmup master PATH</code> (it writes <code>master:</code> to the user config) or in <strong>Settings</strong>. It is read
@@ -656,12 +656,12 @@ config.</li>
 money, accounts, credentials, publishing, a client, deleting data, or the goal itself. Ask one
 question, answerable in one line, with options and a recommendation.</p>
 
-<footer class="source"><a href="https://github.com/dawid-ai/agent-ops/blob/main/docs/protocol.md">View source on GitHub</a></footer>
+<footer class="source"><a href="https://github.com/dawid-ai/swarmup/blob/main/docs/protocol.md">View source on GitHub</a></footer>
 </article>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 </body>
 </html>

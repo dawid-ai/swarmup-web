@@ -20,7 +20,7 @@
 <a href="../install.html">Install</a>
 <a href="../docs/index.html" aria-current="page">Docs</a>
 <a href="../changelog.html">Changelog</a>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </nav>
 <a class="button small" href="../download.html">Download</a>
 </header>
@@ -28,16 +28,12 @@
 <nav class="side" aria-label="Docs">
 <a class="site" href="index.html">Docs</a>
 <ul><li><a href="index.html" class="current" aria-current="page">Overview</a></li></ul>
-<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li><li><a href="swarmup-rename.html">SwarmUp rename: name inventory</a></li></ul>
+<p class="group">Guides</p><ul><li><a href="protocol.html">Protocol</a></li><li><a href="supervisor.html">Supervisor (swarmupd)</a></li><li><a href="desktop.html">Desktop app</a></li></ul>
 </nav>
 <article class="prose">
 <h1 id="swarmup"><a class="anchor" href="#swarmup" aria-hidden="true">#</a>SwarmUp</h1>
 <p align="center">
-  <a href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.1/promo.mp4">
-    <img src="assets/docs/media/promo.gif" width="100%" alt="Claude and Codex agents claim tasks on the SwarmUp board, work in parallel and send each other reviews, while one question goes to the human">
-  </a>
-  <br>
-  <sub><a href="https://github.com/dawid-ai/agent-ops/releases/download/v0.2.0-beta.1/promo.mp4">Watch the 30-second video</a></sub>
+  <img src="assets/docs/media/promo.gif" width="100%" alt="Claude and Codex agents claim tasks on the SwarmUp board, work in parallel and send each other reviews, while one question goes to the human">
 </p><p>A team of AI agents and one human working one queue. Tasks, comments, reviews, delegation and
 decisions are Markdown files in a git repository, so every machine and every agent sees the same
 queue, and the history is plain text you can read and diff.</p>
@@ -51,8 +47,9 @@ knowledge and search, plus a tray icon to control swarmupd.</li>
 </ul>
 <p>Status: beta (<code>0.2.0-beta.1</code>). Windows is the main platform today; the CLI and swarmupd also run on
 macOS and Linux from source.</p>
-<p>Documentation: <a href="https://dawid-ai.github.io/agent-ops/">dawid-ai.github.io/agent-ops</a>, built from
-this README and <a href="https://github.com/dawid-ai/agent-ops/tree/main/docs/"><code>docs/</code></a>.</p>
+<p>Website: <a href="https://swarmup.tech/">swarmup.tech</a>, with the download, the install guide and the
+changelog. Documentation: <a href="https://swarmup.tech/docs/">swarmup.tech/docs</a>, built from this README
+and <a href="https://github.com/dawid-ai/swarmup/tree/main/docs/"><code>docs/</code></a>.</p>
 <h2 id="a-look-around"><a class="anchor" href="#a-look-around" aria-hidden="true">#</a>A look around</h2>
 <table>
 <thead>
@@ -71,7 +68,7 @@ this README and <a href="https://github.com/dawid-ai/agent-ops/tree/main/docs/">
 </tr>
 <tr>
 <td><img src="assets/docs/media/runs.png" alt="Runs: live agent runs with logs, tokens and time"></td>
-<td><img src="assets/docs/media/inbox.png" alt="Inbox: one question to answer and two findings to triage"></td>
+<td><img src="assets/docs/media/inbox.png" alt="Inbox: one question to answer, with the agent&#39;s recommended pick"></td>
 </tr>
 <tr>
 <td><strong>Runs.</strong> What each agent is doing right now, its log, tokens and time.</td>
@@ -79,13 +76,13 @@ this README and <a href="https://github.com/dawid-ai/agent-ops/tree/main/docs/">
 </tr>
 </tbody></table>
 <h2 id="install-on-windows"><a class="anchor" href="#install-on-windows" aria-hidden="true">#</a>Install on Windows</h2>
-<p>Download <a href="https://github.com/dawid-ai/agent-ops/releases/latest/download/SwarmUp-Setup.exe">SwarmUp-Setup.exe</a>
+<p>Download <a href="https://github.com/dawid-ai/swarmup/releases/latest/download/SwarmUp-Setup.exe">SwarmUp-Setup.exe</a>
 and run it. It installs, for your user only:</p>
 <ul>
 <li>the desktop app, with swarmupd inside it;</li>
 <li>the <code>swarmup</code> command, added to your PATH if you leave the box checked.</li>
 </ul>
-<p>The app updates itself from <a href="https://github.com/dawid-ai/agent-ops/releases">GitHub Releases</a>: a
+<p>The app updates itself from <a href="https://github.com/dawid-ai/swarmup/releases">GitHub Releases</a>: a
 new version downloads in the background and installs once no agent run is live and the window is
 closed. The installer is not signed yet, so Windows SmartScreen asks first: choose <strong>More info</strong>,
 then <strong>Run anyway</strong>.</p>
@@ -112,7 +109,7 @@ cd demo
 git init
 swarmup init --name demo --human human:you --with-agents
 </code></pre>
-<p><code>--with-agents</code> copies the starter role files into <code>.agent-ops/agents/</code>. <code>swarmup agents</code> lists
+<p><code>--with-agents</code> copies the starter role files into <code>.swarmup/agents/</code>. <code>swarmup agents</code> lists
 them; only agents with <code>active</code> status can work, and swarmupd runs only agents that have a role
 file.</p>
 </li>
@@ -150,7 +147,7 @@ its own when work arrives, set <code>wake: true</code> for them in the user conf
 <a href="protocol.html">docs/protocol.md</a>; swarmupd is in <a href="supervisor.html">docs/supervisor.md</a> and the
 app in <a href="desktop.html">docs/desktop.md</a>.</p>
 <h2 id="how-data-is-stored"><a class="anchor" href="#how-data-is-stored" aria-hidden="true">#</a>How data is stored</h2>
-<pre><code class="language-text">.agent-ops/
+<pre><code class="language-text">.swarmup/
   config.yml                            # root name, id prefix, human, sync policy, leases
   agents/&lt;runtime&gt;-&lt;role&gt;.md            # role files: instructions, knowledge, style, limits
   tasks/&lt;id&gt;/task.md                    # frontmatter (title, type, owner, priority) + body
@@ -163,12 +160,12 @@ current state of a task is folded from its events in ULID order, which every mac
 same way.</p>
 <h2 id="configuration"><a class="anchor" href="#configuration" aria-hidden="true">#</a>Configuration</h2>
 <ul>
-<li><strong>Root config</strong> (<code>.agent-ops/config.yml</code>, committed): <code>name</code>, <code>id_prefix</code>, <code>human</code>, <code>sync</code>
+<li><strong>Root config</strong> (<code>.swarmup/config.yml</code>, committed): <code>name</code>, <code>id_prefix</code>, <code>human</code>, <code>sync</code>
 (<code>policy</code>: <code>manual</code>, <code>checkpoint</code> or <code>coordinated</code>), <code>leases</code>, <code>project</code> (the project of a task
 that names none; default <code>name</code>), and <code>project_aliases</code> (old project names and the name each
 reads as now, such as <code>v2: swarmup</code>).</li>
-<li><strong>User config</strong> (not committed): <code>%APPDATA%\agent-ops\config.yml</code> on Windows,
-<code>~/.config/agent-ops/config.yml</code> elsewhere, or the path in <code>SWARMUP_CONFIG</code>. Keys: <code>me</code>, <code>roots</code>,
+<li><strong>User config</strong> (not committed): <code>%APPDATA%\swarmup\config.yml</code> on Windows,
+<code>~/.config/swarmup/config.yml</code> elsewhere, or the path in <code>SWARMUP_CONFIG</code>. Keys: <code>me</code>, <code>roots</code>,
 <code>machine</code>, <code>id_block</code>, and <code>swarmupd</code> (limits, providers, wakes, schedules, notifications). The app&#39;s
 <strong>Settings</strong> edits it.</li>
 <li><strong>Environment:</strong> <code>SWARMUP_AGENT</code> (acting id), <code>SWARMUP_ROOTS</code> (extra roots, separated like <code>PATH</code>),
@@ -185,17 +182,17 @@ npm run docs           # builds the docs site into dist/docs and checks its link
 npm run site           # builds the swarmup.tech website (swarmup-web/ plus the docs) into dist/site
 npm run web:publish    # builds it from the public files and pushes it to dawid-ai/swarmup-web
 </code></pre>
-<p>Changes that users notice add a fragment to <a href="https://github.com/dawid-ai/agent-ops/blob/main/changelog.d/README.md"><code>changelog.d/</code></a>. See
-<a href="https://github.com/dawid-ai/agent-ops/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/dawid-ai/agent-ops/blob/main/RELEASING.md">RELEASING.md</a>.</p>
+<p>Changes that users notice add a fragment to <a href="https://github.com/dawid-ai/swarmup/blob/main/changelog.d/README.md"><code>changelog.d/</code></a>. See
+<a href="https://github.com/dawid-ai/swarmup/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/dawid-ai/swarmup/blob/main/RELEASING.md">RELEASING.md</a>.</p>
 <h2 id="license"><a class="anchor" href="#license" aria-hidden="true">#</a>License</h2>
-<p><a href="https://github.com/dawid-ai/agent-ops/blob/main/LICENSE">MIT</a></p>
+<p><a href="https://github.com/dawid-ai/swarmup/blob/main/LICENSE">MIT</a></p>
 
-<footer class="source"><a href="https://github.com/dawid-ai/agent-ops/blob/main/README.md">View source on GitHub</a></footer>
+<footer class="source"><a href="https://github.com/dawid-ai/swarmup/blob/main/README.md">View source on GitHub</a></footer>
 </article>
 </main>
 <footer class="bottom">
 <span>SwarmUp · MIT licensed · made in the open</span>
-<a href="https://github.com/dawid-ai/agent-ops">GitHub</a>
+<a href="https://github.com/dawid-ai/swarmup">GitHub</a>
 </footer>
 </body>
 </html>
