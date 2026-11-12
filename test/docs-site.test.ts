@@ -97,6 +97,57 @@ describe('docs site', () => {
     expect(r.out).not.toMatch(/#part/);
   });
 
+  it('rewrites and copies the images of a raw-HTML <picture>, srcset included', () => {
+    const banner =
+      '<picture>\n' +
+      '  <source media="(prefers-color-scheme: dark)" srcset="docs/media/ink.png">\n' +
+      '  <source srcset="docs/media/a.png 1x, docs/media/b.png 2x,https://example.com/c.png 3x">\n' +
+      '  <img src="docs/media/paper.png" alt="Proj">\n' +
+      '</picture>\n';
+    const d = repo({
+      'README.md': `${banner}\n# Proj\n`,
+      'docs/guide.md': '# Guide\n\n<source srcset="media/ink.png">\n',
+      'docs/media/ink.png': 'ink',
+      'docs/media/a.png': 'a',
+      'docs/media/b.png': 'b',
+      'docs/media/paper.png': 'paper',
+    });
+    const r = build(d);
+    expect(r.code, r.out).toBe(0);
+
+    const index = page(d, 'index.html');
+    expect(index).toContain('srcset="assets/docs/media/ink.png"');
+    expect(index).toContain(
+      'srcset="assets/docs/media/a.png 1x, assets/docs/media/b.png 2x,https://example.com/c.png 3x"',
+    );
+    expect(index).toContain('src="assets/docs/media/paper.png"');
+    expect(page(d, 'guide.html')).toContain('srcset="assets/docs/media/ink.png"');
+    for (const name of ['ink', 'a', 'b', 'paper']) {
+      expect(page(d, `assets/docs/media/${name}.png`)).toBe(name);
+    }
+    expect(check(d).code).toBe(0);
+  });
+
+  it('fails on a srcset image that does not exist', () => {
+    const d = repo({ 'README.md': '# Proj\n\n<source srcset="docs/media/gone.png 2x">\n' });
+    const r = build(d);
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/README\.md: broken link docs\/media\/gone\.png/);
+  });
+
+  it('link check fails on a srcset image the built site lacks', () => {
+    const d = repo({ 'README.md': '# Proj\n' });
+    expect(build(d).code).toBe(0);
+    writeFileSync(
+      join(d, 'dist', 'docs', 'extra.html'),
+      '<source srcset="index.html 1x, gone.png 2x">',
+    );
+    const r = check(d);
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/extra\.html: broken link gone\.png/);
+    expect(r.out).not.toMatch(/index\.html 1x/);
+  });
+
   it('refuses an output folder that holds a source file', () => {
     const d = repo({ 'README.md': '# Proj\n' });
     const r = node('build-docs.mjs', '--root', d, '--out', d);

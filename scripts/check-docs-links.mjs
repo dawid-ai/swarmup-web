@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Checks the links of a built docs site (scripts/build-docs.mjs). Every relative href or src must
-// name a file in the site, and every #anchor an id on the target page; a broken one exits 1.
+// Checks the links of a built docs site (scripts/build-docs.mjs). Every relative href, src or
+// srcset URL must name a file in the site, and every #anchor an id on the target page; a broken
+// one exits 1.
 //
 // With --external, it also requests each http(s) link once. A failing external link is a warning,
 // not an error: third-party sites rate-limit CI runners, and links to this repo's releases or
@@ -44,8 +45,13 @@ const ids = new Map(
 const errors = [];
 const urls = new Map(); // external url -> first page that links it
 for (const [file, text] of html) {
-  for (const m of text.matchAll(/\s(?:href|src)="([^"]*)"/g)) {
-    const link = decode(m[1]);
+  const links = [...text.matchAll(/\s(?:href|src)="([^"]*)"/g)].map((m) => m[1]);
+  // A srcset holds one URL or several, each with an optional descriptor: `a.png 1x, b.png 2x`.
+  for (const m of text.matchAll(/\ssrcset="([^"]*)"/g)) {
+    for (const c of m[1].matchAll(/([^\s,]\S*?)(?=,*(?:\s|$))(?:,+|\s+[^,]*)?/g)) links.push(c[1]);
+  }
+  for (const raw of links) {
+    const link = decode(raw);
     if (/^https?:\/\//i.test(link)) {
       if (!urls.has(link)) urls.set(link, file);
       continue;
