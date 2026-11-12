@@ -1,0 +1,59 @@
+name: pages
+# Builds swarmup.tech and deploys it to GitHub Pages. The pages and assets come from this
+# repository; the docs, the changelog and the product's repo link come from main of the tool,
+# dawid-ai/swarmup, checked out next to it. Runs on every push to main, once a day (so docs
+# merged into the tool go live), and by hand. The download page also asks GitHub for the newest
+# release in the browser, so a release shows without a rebuild.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SWARMUP_TOOL: ${{ github.workspace }}/.tool
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: dawid-ai/swarmup
+          ref: main
+          path: .tool
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: node build.mjs && node scripts/check-docs-links.mjs dist/site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

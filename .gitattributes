@@ -1,0 +1,4 @@
+# Keep every text file LF on every OS; Windows checkouts with core.autocrlf=true stay LF too.
+* text=auto eol=lf
+*.png binary
+*.gif binary

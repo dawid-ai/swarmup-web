@@ -1,0 +1,22 @@
+{
+  "name": "swarmup-web",
+  "private": true,
+  "description": "The swarmup.tech website: home, download, install guide, changelog and the docs of SwarmUp",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node build.mjs && node scripts/check-docs-links.mjs dist/site",
+    "build:offline": "node build.mjs --offline && node scripts/check-docs-links.mjs dist/site",
+    "schematic": "node schematic.mjs",
+    "test": "vitest run",
+    "lint": "prettier --check ."
+  },
+  "devDependencies": {
+    "marked": "^18.1.2",
+    "prettier": "^3.9.10",
+    "vitest": "^3.2.7"
+  }
+}
