@@ -187,41 +187,51 @@ input, cache writes and output; cache reads are left out.</p>
 </tr>
 </tbody></table>
 <ul>
-<li>The providers come from the user config only, once it is seeded (<code>opsd.seeded</code>). <code>swarmup setup</code>,
+<li><p>The providers come from the user config only, once it is seeded (<code>opsd.seeded</code>). <code>swarmup setup</code>,
 the desktop&#39;s first start and swarmupd&#39;s start write the defaults (<code>claude</code>, <code>codex</code>) once; a
 machine with no config file also gets the default agents (<code>engineer</code>, <code>qa</code>, <code>reviewer</code> and <code>pm</code>
 for each default provider found on PATH). A config from before seeding gets the defaults
-written on the next swarmupd start, with a note in the swarmupd log, and keeps every entry it had.</li>
-<li>The model of a run is the agent&#39;s <code>model</code> in the config, else its role file&#39;s <code>model</code>, else the
+written on the next swarmupd start, with a note in the swarmupd log, and keeps every entry it had.</p>
+</li>
+<li><p>The model of a run is the agent&#39;s <code>model</code> in the config, else its role file&#39;s <code>model</code>, else the
 provider&#39;s <code>model</code>. A model is one word that cannot start with <code>-</code>. Other runtimes get no model
-flag.</li>
-<li>A run of a provider the config does not list, such as one removed in Settings, does not start:
-<code>swarmup waits</code> and the launch error say <code>no provider &#39;&lt;name&gt;&#39; in Settings &gt; Providers</code>.</li>
-<li>Claude&#39;s allowed tools are the role file&#39;s <code>tools</code> (or a default dev set) plus <code>Bash(swarmup *)</code> and, until 0.4, <code>Bash(ops *)</code> for the old command name.
+flag.</p>
+</li>
+<li><p>A run of a provider the config does not list, such as one removed in Settings, does not start:
+<code>swarmup waits</code> and the launch error say <code>no provider &#39;&lt;name&gt;&#39; in Settings &gt; Providers</code>.</p>
+</li>
+<li><p>Claude&#39;s allowed tools are the role file&#39;s <code>tools</code> (or a default dev set) plus <code>Bash(swarmup *)</code> and, until 0.4, <code>Bash(ops *)</code> for the old command name.
 Kills by name (<code>taskkill</code>, <code>pkill</code>, <code>killall</code>, <code>Stop-Process</code>), force pushes, and <code>Edit</code> or
 <code>Write</code> against any data root&#39;s <code>agents/</code> directory are always denied. A run of a role that does
 not write (<code>roles.&lt;role&gt;.writes: false</code>, the default for <code>qa</code>, <code>reviewer</code> and <code>orchestrator</code>)
-gets <code>Edit</code>, <code>Write</code> and <code>NotebookEdit</code> denied as well, even when its role file lists them.</li>
-<li>Role-file <code>mcp</code> fields are preserved metadata; the supervisor does not configure a run from them.</li>
-<li>Runs inherit swarmupd&#39;s environment and act as the human&#39;s accounts; task events record which agent
+gets <code>Edit</code>, <code>Write</code> and <code>NotebookEdit</code> denied as well, even when its role file lists them.</p>
+</li>
+<li><p>Role-file <code>mcp</code> fields are preserved metadata; the supervisor does not configure a run from them.</p>
+</li>
+<li><p>Runs inherit swarmupd&#39;s environment and act as the human&#39;s accounts; task events record which agent
 did what. Codex&#39;s sandbox blocks network access and <code>.git</code> writes. A runtime&#39;s <code>unset_env</code> lists
-variables its runs must not see; no default runtime sets one.</li>
-<li><code>--add-dir</code> gives the run every data root&#39;s repo that is not inside its working folder.</li>
-<li>A Codex run of a role that writes also gets <code>worktrees</code>, <code>objects</code>, <code>refs</code> and <code>logs</code> of its
+variables its runs must not see; no default runtime sets one.</p>
+</li>
+<li><p><code>--add-dir</code> gives the run every data root&#39;s repo that is not inside its working folder.</p>
+</li>
+<li><p>A Codex run of a role that writes also gets <code>worktrees</code>, <code>objects</code>, <code>refs</code> and <code>logs</code> of its
 checkout&#39;s shared git folder (<code>git rev-parse --git-common-dir</code>) as <code>--add-dir</code>, so it can
 commit in a worktree such as <code>out/wt-&lt;id&gt;</code>, whose index and lock files live in
 <code>&lt;common&gt;/worktrees/&lt;name&gt;</code>. swarmupd makes <code>worktrees</code> and <code>logs</code> when they are missing. The
 shared git folder itself stays read-only: the run cannot change <code>config</code> or <code>hooks</code>, or the
-main checkout&#39;s <code>HEAD</code> and <code>index</code>.</li>
-<li>A Codex run of a role that does not write starts in its task store, not in its checkout:
+main checkout&#39;s <code>HEAD</code> and <code>index</code>.</p>
+</li>
+<li><p>A Codex run of a role that does not write starts in its task store, not in its checkout:
 <code>-C &lt;store&gt;</code>, with every other data root&#39;s folder as <code>--add-dir</code>. Codex&#39;s sandbox always lets a
 run write its working folder, so this keeps the checkout and the other repos read-only while
 the run&#39;s <code>swarmup</code> commands still write the task store. The prompt names the checkout and tells
 the run to read it by path and to run <code>git -C &lt;checkout&gt;</code>. If the run has no task store, it
-gets <code>--sandbox read-only</code> in its checkout instead.</li>
-<li>The working folder is <code>--cwd</code>, then the agent&#39;s <code>cwd</code> in the config, then the top of the task&#39;s
-repo.</li>
-<li>When the working folder is a data root&#39;s checkout (the git checkout that holds a <code>.swarmup/</code>
+gets <code>--sandbox read-only</code> in its checkout instead.</p>
+</li>
+<li><p>The working folder is <code>--cwd</code>, then the agent&#39;s <code>cwd</code> in the config, then the top of the task&#39;s
+repo.</p>
+</li>
+<li><p>When the working folder is a data root&#39;s checkout (the git checkout that holds a <code>.swarmup/</code>
 folder swarmupd knows), the branch checked out there carries the task store. The run&#39;s prompt names
 the store branch (<code>sync.branch</code>, else the learned one) and tells the run never to run
 <code>git checkout</code> or <code>git switch</code> there, and to make code branches in a worktree inside the
@@ -231,8 +241,9 @@ checkout, such as <code>git worktree add out/wt-&lt;ID&gt; -b &lt;branch&gt; &lt
 <code>Bash(git checkout*)</code> and <code>Bash(git switch*)</code> denied; Codex has no deny list and relies on the
 prompt. A run in a linked worktree is in no data root&#39;s checkout and gets neither. Linked
 worktrees inside a checkout are never changes of it: they do not hold back a writing run, and
-swarmupd never commits them with what a run left.</li>
-<li><strong>Task worktrees (AO-0168).</strong> A run on a code task (type <code>task</code>, <code>bug</code> or <code>feature</code>) of a role
+swarmupd never commits them with what a run left.</p>
+</li>
+<li><p><strong>Task worktrees (AO-0168).</strong> A run on a code task (type <code>task</code>, <code>bug</code> or <code>feature</code>) of a role
 that writes, whose folder would be a data root&#39;s checkout, starts in the task&#39;s own worktree
 <code>out/wt-&lt;ID&gt;</code> inside that checkout instead. Not for an explicit <code>--cwd</code>, an agent with its own
 <code>cwd</code>, a helper, a review, a question or a chat turn. A worktree that is there is reused as it
@@ -247,8 +258,30 @@ a warning for each failure. The prompt names the worktree and its branch and tel
 commit there and leave the store checkout&#39;s branch alone. The worktree holds a copy of the task
 store as of its branch, so a run whose folder holds such a copy gets <code>SWARMUP_ROOTS_ONLY=1</code>: its
 <code>swarmup</code> uses only <code>SWARMUP_ROOTS</code>, the copied root first, never the stale copy. To keep such runs in
-the store checkout, one writer at a time, set <code>opsd.task_worktrees: false</code>.</li>
-<li><strong>Reclaiming task worktrees (AO-0230).</strong> Every 10 minutes, and at swarmupd&#39;s first tick,
+the store checkout, one writer at a time, set <code>opsd.task_worktrees: false</code>.</p>
+</li>
+<li><p><strong>Code in a checkout of its own (AO-0252).</strong> A task store can be a repo of its own, so the code
+repo can be public while tasks and chats stay private. Name the code checkout per root in the
+user config:</p>
+<pre><code class="language-yaml">opsd:
+  code:
+    agent-ops: C:\dev\swarmup # the root&#39;s name: the code checkout
+  merge:
+    agent-ops:
+      base: main
+      checkout: C:\dev\swarmup
+</code></pre>
+<p>Runs then start in that checkout instead of the store&#39;s. Task worktrees are made there
+(<code>&lt;code&gt;/out/wt-&lt;ID&gt;</code>), and run leftovers and task branches go to its repo. Reclaiming and
+pushing task branches work on its worktrees and remote. The prompt calls it the checkout
+swarmupd merges into, with the same rule as a store checkout: keep its base checked out, and
+make code branches in a worktree. Because no store sync pushes that repo, swarmupd pushes the
+merged commit to its base on the remote after each merge, after the same secret check task
+branches get. It never forces the push, and a refused push is a warning in the swarmupd log.
+<code>opsd.push_branches.&lt;root&gt;: false</code> turns that push off too. Without an entry, the code is the
+repo the store is in, as before.</p>
+</li>
+<li><p><strong>Reclaiming task worktrees (AO-0230).</strong> Every 10 minutes, and at swarmupd&#39;s first tick,
 swarmupd removes the worktree <code>out/wt-&lt;ID&gt;</code> of each task that has been <code>done</code> or <code>parked</code> for
 <code>opsd.reclaim_after_minutes</code> (60). It removes a worktree only when no run works in it, no merge
 of the task waits, <code>git status</code> shows no change, and its commit is on a branch. The branch
@@ -259,16 +292,18 @@ with one warning per reason in the swarmupd log. swarmupd deletes the folder wit
 Windows follows a junction in the folder, such as a <code>node_modules</code> entry linked to the main
 checkout, and deletes what the junction points to. A removal is saved before the folder is
 touched, so the next sweep finishes one that a crash or a locked file cut off. Set
-<code>opsd.reclaim_worktrees: false</code> to keep every worktree.</li>
-<li><strong>Crash recovery in task worktrees (AO-0230).</strong> swarmupd makes a task worktree locked with the
+<code>opsd.reclaim_worktrees: false</code> to keep every worktree.</p>
+</li>
+<li><p><strong>Crash recovery in task worktrees (AO-0230).</strong> swarmupd makes a task worktree locked with the
 reason <code>swarmupd: making</code> and unlocks it once git has checked out every file. A worktree that
 still has that lock was cut off mid-checkout by a crash or power cut: no run ever worked in it,
 so the next sweep deletes it, and the next run makes it again. Before a run starts in a task
 worktree, swarmupd removes an <code>index.lock</code> older than 2 minutes there. After a run&#39;s processes
 are gone, it removes the run&#39;s <code>index.lock</code> before committing what the run left. Git leaves
 such a lock when it is killed mid-write, and every later git command in the worktree fails
-until it is gone.</li>
-<li><strong>Scratch folders (AO-0230).</strong> Each run gets its own folder, <code>&lt;state&gt;/scratch/&lt;run id&gt;</code>, named in
+until it is gone.</p>
+</li>
+<li><p><strong>Scratch folders (AO-0230).</strong> Each run gets its own folder, <code>&lt;state&gt;/scratch/&lt;run id&gt;</code>, named in
 <code>SWARMUP_SCRATCH</code> and in <code>TEMP</code>, <code>TMP</code> and <code>TMPDIR</code>. It is an extra writable folder for Claude
 (<code>--add-dir</code>) and Codex. The prompt of a run that writes tells it to put logs, test output,
 experiments and downloads there, and never in the repo, its <code>out/</code> folder or the folder that
@@ -277,7 +312,8 @@ ends. For a writing run, swarmupd lists the folder that holds the store checkout
 a home, temp or drive-root folder), plus the store checkout and its <code>out/</code> for a run in a task
 worktree. It lists them when the run starts and again when it ends. The <code>run-end</code> event names
 each new file or folder; swarmupd changes nothing there, since another run or a person may have
-made them.</li>
+made them.</p>
+</li>
 </ul>
 <h3 id="processes"><a class="anchor" href="#processes" aria-hidden="true">#</a>Processes</h3>
 <p>Every process starts with no console window. swarmupd stops only processes it started, and never
