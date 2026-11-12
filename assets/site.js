@@ -1,18 +1,17 @@
 /* global document, window, setInterval, IntersectionObserver */
-// The home page schematic: its four steps light up one stage at a time, on their own until the
-// reader clicks one.
+// The four seats under the hero's mark: one is pressed at a time, on its own until the reader
+// clicks one. hero.js, when it has loaded, brings that seat's tile forward in the 3D mark.
 (function () {
-  var svg = document.querySelector('[data-net] svg.net');
   var tabs = document.querySelectorAll('[data-tab]');
-  if (!svg || tabs.length === 0) return;
-  var stage = 0;
+  if (tabs.length === 0) return;
+  var seat = 0;
   var manual = false;
   function show(i) {
-    stage = i;
-    svg.setAttribute('data-stage', String(i));
+    seat = i;
     for (var k = 0; k < tabs.length; k++) {
       tabs[k].setAttribute('aria-pressed', k === i ? 'true' : 'false');
     }
+    if (window.swarmupHero) window.swarmupHero.show(i);
   }
   for (var k = 0; k < tabs.length; k++) {
     tabs[k].addEventListener(
@@ -26,12 +25,9 @@
     );
   }
   show(0);
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    if (svg.pauseAnimations) svg.pauseAnimations();
-    return;
-  }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   setInterval(function () {
-    if (!manual && !document.hidden) show((stage + 1) % tabs.length);
+    if (!manual && !document.hidden) show((seat + 1) % tabs.length);
   }, 3400);
 })();
 

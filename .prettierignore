@@ -1,3 +1,4 @@
 dist/
 .tool/
 package-lock.json
+assets/vendor/

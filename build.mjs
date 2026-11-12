@@ -9,7 +9,7 @@
 //   docs/           the docs site, built by scripts/build-docs.mjs from README.md and docs/
 //   404.html        sends old docs addresses (/protocol.html) to their new place under /docs/
 //   CNAME           the custom domain
-//   site.css, site.js, favicon.svg, og.png   copied from assets/
+//   site.css, site.js, favicon.svg, og.png, brand/, vendor/   everything under assets/, copied
 //
 // The download page never names a fixed version. It shows the release the build found, and a
 // small script asks the GitHub API again in the browser, so a release published after the build
@@ -283,15 +283,19 @@ const NAV = [
 ];
 
 // The site's own files: the mark (four squares, one per kind of worker: you, two AI providers, the
-// orchestrator), the stylesheet, the schematic's stage script and the favicon. They are read from
+// orchestrator), the stylesheet, the scripts, the favicon and the brand images. They are read from
 // the site's folder. A scratch site without its own assets (in the tests) uses this repository's.
 const assets = existsSync(join(site, 'assets')) ? join(site, 'assets') : join(here, 'assets');
 const asset = (name) => readFileSync(join(assets, name), 'utf8');
 const LOGO = asset('logo.svg').trim();
+// The lockup rendered from the 3D mark, for the header (ink name) and the footer (paper name).
+// A site without it shows the flat mark and the name as text.
+const LOCKUP = existsSync(join(assets, 'brand', 'lockup-ink.png'));
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Big+Shoulders+Display:wght@700;800;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap';
 // The picture a shared link shows. Optional, like the founder page.
 const OG_IMAGE = existsSync(join(assets, 'og.png')) ? 'og.png' : '';
+const ICO = existsSync(join(assets, 'favicon.ico'));
 
 /**
  * One page of the site. `main`: `prose` is a text column, `wide` a page that lays out its own
@@ -344,14 +348,23 @@ ${image}`
 <meta name="theme-color" content="#F1EDE2">
 <title>${escapeHtml(full)}</title>
 ${meta}<link rel="icon" href="${href('favicon.svg')}" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+${
+  ICO
+    ? `<link rel="alternate icon" href="${href('favicon.ico')}" sizes="any">
+`
+    : ''
+}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${FONTS}">
 <link rel="stylesheet" href="${href('site.css')}">
 </head>
 <body>
 <header class="top">
-<a class="brand" href="${href('index.html')}">${LOGO}${PRODUCT}</a>
+<a class="brand" href="${href('index.html')}">${
+    LOCKUP
+      ? `<img src="${href('brand/lockup-ink.png')}" alt="${PRODUCT}" width="158" height="32">`
+      : LOGO + PRODUCT
+  }</a>
 <nav>
 ${links}
 ${github}
@@ -362,7 +375,12 @@ ${github}
 ${body}
 </main>
 <footer class="bottom">
-<span>${PRODUCT} · MIT licensed · made in the open</span>
+${
+  LOCKUP
+    ? `<img src="${href('brand/lockup-paper.png')}" alt="" width="119" height="24">
+`
+    : ''
+}<span>${PRODUCT} · MIT licensed · made in the open</span>
 ${founder}
 ${github}
 </footer>
@@ -371,11 +389,11 @@ ${script}</body>
 `;
 }
 
-// The home page's schematic: the four steps under it light up one stage at a time, on their own
-// until the reader clicks one. Without it all four steps show and the schematic stays on Plan.
+// The home page's hero: the mark in 3D, with four seats under it that press one at a time, on
+// their own until the reader clicks one. Without scripts the still render and all four show.
 
 // The site theme: paper and ink with one acid accent, set in Big Shoulders Display, Archivo and
-// IBM Plex Mono. The dark bands hold the schematic and the house rules; the provider colors (you,
+// IBM Plex Mono. The dark bands hold the four stops and the house rules; the provider colors (you,
 // Claude, Codex, the orchestrator) show only where they say who did the work.
 
 // ---- Build --------------------------------------------------------------------------------
@@ -407,7 +425,14 @@ const changelog = markdownPage('UPDATES.md', 'changelog.html');
 const home = readFileSync(srcPath('swarmup-web/pages/home.html'), 'utf8');
 const founderPage = hasFounder ? readFileSync(srcPath(FOUNDER), 'utf8') : '';
 // Files the build writes next to the pages, which the home page may link.
-const ASSETS = ['site.js', 'site.css', 'favicon.svg', ...(OG_IMAGE ? [OG_IMAGE] : [])];
+// Every file under assets/, at the same path in the site: the stylesheet and scripts, the brand
+// images and the 3D mark (brand/), and the 3D library the hero loads (vendor/). The flat mark is
+// set into the page, so it is not copied.
+const assetFiles = (dir = '') =>
+  readdirSync(join(assets, dir), { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? assetFiles(posix.join(dir, e.name)) : [posix.join(dir, e.name)],
+  );
+const ASSETS = assetFiles().filter((f) => f !== 'logo.svg');
 // The home page links pages of the site and images under media/, which are the docs' own
 // screenshots (docs/media/), copied at build time so they never drift apart.
 const media = new Set();
@@ -560,12 +585,15 @@ write(
 </script>
 `,
   }).replace(
-    /href="(?:\.\/)?(site\.css|favicon\.svg|index\.html|download\.html|install\.html|changelog\.html|founder\.html|docs\/index\.html)"/g,
-    'href="/$1"',
+    /(?:href|src)="(?:\.\/)?(site\.css|favicon\.svg|favicon\.ico|brand\/[^"]+|index\.html|download\.html|install\.html|changelog\.html|founder\.html|docs\/index\.html)"/g,
+    (m, path) => `${m.slice(0, m.indexOf('=') + 1)}"/${path}"`,
   ),
 );
 
-for (const name of ASSETS) copyFileSync(join(assets, name), join(out, name));
+for (const name of ASSETS) {
+  mkdirSync(dirname(join(out, name)), { recursive: true });
+  copyFileSync(join(assets, name), join(out, name));
+}
 for (const file of media) {
   mkdirSync(dirname(join(out, file)), { recursive: true });
   copyFileSync(join(root, 'docs', file), join(out, file));

@@ -1,9 +1,9 @@
-<!-- Body of the home page; swarmup-web/build.mjs wraps it in the site layout. Links to media/
-     are the screenshots in docs/media/. site.js steps the schematic through its four stages; without
-     it all four steps show and the schematic stays on the first. The schematic SVG is generated from
-     node and line lists: change those lists, not the paths by hand. The receipt, the ticker, the
-     AO-0175 excerpt and the 56:1 ratio are copied from our own task store, `swarmup report --days 30`
-     and `swarmup wrapped`; update them together, with the date range. -->
+<!-- Body of the home page; build.mjs wraps it in the site layout. Images under brand/ are the
+     renders of the 3D mark (assets/brand/). hero.js draws the mark in 3D inside [data-hero] and
+     site.js steps its four tabs; without them the still render and all four captions show.
+     The ticker, the receipt, the example task and the app vignettes are invented examples, written
+     to be recognized, not measured. The founder section is the exception: its figures come from
+     SwarmUp's own queue (`swarmup report --days 30`); update them with the founder page. -->
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
@@ -29,122 +29,178 @@
         in your git repo.
       </p>
     </div>
-    <figure class="receipt-wrap" aria-label="Thirty days of SwarmUp's own queue, as a receipt">
-      <div class="receipt">
-        <header>
-          <strong>SwarmUp</strong>
-          <span>30 days of work, itemized</span>
-          <span>2026-10-12 to 2026-11-11</span>
-        </header>
-        <hr />
-        <dl>
-          <div>
-            <dt>Tasks closed</dt>
-            <dd>194</dd>
-          </div>
-          <div>
-            <dt>Agent runs</dt>
-            <dd>1,977</dd>
-          </div>
-          <div class="indent">
-            <dt>Claude Code</dt>
-            <dd>1,448</dd>
-          </div>
-          <div class="indent">
-            <dt>Codex</dt>
-            <dd>529</dd>
-          </div>
-          <div>
-            <dt>Agent hours</dt>
-            <dd>229.8</dd>
-          </div>
-          <div>
-            <dt>Tokens</dt>
-            <dd>61.9 M</dd>
-          </div>
-          <div>
-            <dt>Answer wait, median</dt>
-            <dd>4 min</dd>
-          </div>
-        </dl>
-        <hr />
-        <dl>
-          <div>
-            <dt>Humans on staff</dt>
-            <dd>1</dd>
-          </div>
-          <div class="total">
-            <dt>Human time</dt>
-            <dd>4 h 05 min</dd>
-          </div>
-        </dl>
-        <hr />
-        <p class="thanks">Thank you for not babysitting</p>
-        <div class="barcode" aria-hidden="true"></div>
-        <small
-          >The queue that builds SwarmUp. Source: swarmup report --days 30. Human time is estimated
-          from when the human acted.</small
-        >
+    <div class="mark">
+      <div class="stage" data-hero>
+        <img
+          src="brand/mark-hero.webp"
+          alt="The SwarmUp mark: four tiles, one each for you, Claude, Codex and the orchestrator"
+          width="960"
+          height="960"
+        />
       </div>
-    </figure>
+      <ol class="seats" aria-label="Who is on the team">
+        <li>
+          <button type="button" data-tab aria-pressed="true" style="--c: var(--mark-pink)">
+            <strong>You</strong>
+            <span>Say what you want, once. Answer the few questions that are yours.</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" data-tab aria-pressed="false" style="--c: var(--mark-orange)">
+            <strong>Claude</strong>
+            <span>Claims a task and builds it in its own worktree. Codex checks it.</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" data-tab aria-pressed="false" style="--c: var(--mark-cyan)">
+            <strong>Codex</strong>
+            <span>Same job, other way round: what Codex builds, Claude reviews.</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" data-tab aria-pressed="false" style="--c: var(--mark-violet)">
+            <strong>Orchestrator</strong>
+            <span>Wakes whoever is next, runs your tests, merges what passes.</span>
+          </button>
+        </li>
+      </ol>
+    </div>
   </div>
 </section>
 
-<div class="ticker ink" aria-label="Real events from SwarmUp's own queue">
+<div class="ticker ink" aria-label="A sample of what a queue sounds like">
   <div class="ticker-track">
-    <span><time>08:20</time> <b style="--c: var(--claude)">claude:engineer</b> claims AO-0175</span>
     <span
-      ><time>08:41</time> <b style="--c: var(--claude)">claude:engineer</b> asks codex:qa for a
-      review</span
-    >
-    <span
-      ><time>08:45</time> <b style="--c: var(--codex)">codex:qa</b> approves <em>· 4 min</em></span
-    >
-    <span
-      ><time>09:33</time> <b style="--c: var(--orchestrator)">orchestrator</b> refuses the merge:
-      npm test failed <em>· back to the owner</em></span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:engineer</b
+      >
+      claimed “Fix checkout on Safari”</span
     >
     <span
-      ><time>09:49</time> <b style="--c: var(--claude)">claude:qa</b> asks human:dawid one
-      question</span
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:reviewer</b
+      >
+      “The test passes because you deleted it. Put it back.”</span
     >
     <span
-      ><time>09:50</time> <b style="--c: var(--you)">human:dawid</b> “ok, let’s go with A”
-      <em>· 88 s</em></span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:engineer</b
+      >
+      “Fair. It’s back. It passes for real now.”</span
     >
-    <span><time>14:03</time> <b style="--c: var(--claude)">claude:engineer</b> claims AO-0216</span>
     <span
-      ><time>14:36</time> <b style="--c: var(--codex)">codex:reviewer</b> sends AO-0216 back with
-      changes <em>· 3 min</em></span
+      ><img src="brand/tile-orchestrator.png" alt="" width="20" height="20" /><b
+        style="--c: var(--orchestrator)"
+        >orchestrator</b
+      >
+      refused a merge: 2 tests red <em>· back to the owner</em></span
+    >
+    <span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:pm</b
+      >
+      split “Holiday sale” into 6 tasks</span
+    >
+    <span
+      ><img src="brand/tile-you.png" alt="" width="20" height="20" /><b style="--c: var(--you)"
+        >you</b
+      >
+      answered one question <em>· 40 seconds</em></span
+    >
+    <span
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:engineer</b
+      >
+      picked up the task nobody wanted</span
+    >
+    <span
+      ><img src="brand/tile-orchestrator.png" alt="" width="20" height="20" /><b
+        style="--c: var(--orchestrator)"
+        >orchestrator</b
+      >
+      merged 3 tasks while you were at lunch</span
+    >
+    <span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:docs</b
+      >
+      “I updated the README. Someone had to.”</span
+    >
+    <span
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:qa</b
+      >
+      found the bug before the demo did</span
     >
     <span aria-hidden="true"
-      ><time>08:20</time> <b style="--c: var(--claude)">claude:engineer</b> claims AO-0175</span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:engineer</b
+      >
+      claimed “Fix checkout on Safari”</span
     >
     <span aria-hidden="true"
-      ><time>08:41</time> <b style="--c: var(--claude)">claude:engineer</b> asks codex:qa for a
-      review</span
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:reviewer</b
+      >
+      “The test passes because you deleted it. Put it back.”</span
     >
     <span aria-hidden="true"
-      ><time>08:45</time> <b style="--c: var(--codex)">codex:qa</b> approves <em>· 4 min</em></span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:engineer</b
+      >
+      “Fair. It’s back. It passes for real now.”</span
     >
     <span aria-hidden="true"
-      ><time>09:33</time> <b style="--c: var(--orchestrator)">orchestrator</b> refuses the merge:
-      npm test failed <em>· back to the owner</em></span
+      ><img src="brand/tile-orchestrator.png" alt="" width="20" height="20" /><b
+        style="--c: var(--orchestrator)"
+        >orchestrator</b
+      >
+      refused a merge: 2 tests red <em>· back to the owner</em></span
     >
     <span aria-hidden="true"
-      ><time>09:49</time> <b style="--c: var(--claude)">claude:qa</b> asks human:dawid one
-      question</span
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:pm</b
+      >
+      split “Holiday sale” into 6 tasks</span
     >
     <span aria-hidden="true"
-      ><time>09:50</time> <b style="--c: var(--you)">human:dawid</b> “ok, let’s go with A”
-      <em>· 88 s</em></span
+      ><img src="brand/tile-you.png" alt="" width="20" height="20" /><b style="--c: var(--you)"
+        >you</b
+      >
+      answered one question <em>· 40 seconds</em></span
     >
     <span aria-hidden="true"
-      ><time>14:03</time> <b style="--c: var(--claude)">claude:engineer</b> claims AO-0216</span
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:engineer</b
+      >
+      picked up the task nobody wanted</span
     >
     <span aria-hidden="true"
-      ><time>14:36</time> <b style="--c: var(--codex)">codex:reviewer</b> sends AO-0216 back with
-      changes <em>· 3 min</em></span
+      ><img src="brand/tile-orchestrator.png" alt="" width="20" height="20" /><b
+        style="--c: var(--orchestrator)"
+        >orchestrator</b
+      >
+      merged 3 tasks while you were at lunch</span
+    >
+    <span aria-hidden="true"
+      ><img src="brand/tile-claude.png" alt="" width="20" height="20" /><b
+        style="--c: var(--claude)"
+        >claude:docs</b
+      >
+      “I updated the README. Someone had to.”</span
+    >
+    <span aria-hidden="true"
+      ><img src="brand/tile-codex.png" alt="" width="20" height="20" /><b style="--c: var(--codex)"
+        >codex:qa</b
+      >
+      found the bug before the demo did</span
     >
   </div>
 </div>
@@ -198,330 +254,155 @@
 <section class="section ink" id="how">
   <div class="wrap">
     <p class="label"><b>02</b> How a task moves</p>
-    <h2><span>A task has four stops.</span> <span>You’re needed at one.</span></h2>
-  </div>
-  <div class="wrap stops">
-    <ol class="stepper" aria-label="How a task moves">
-      <li>
-        <button type="button" data-tab aria-pressed="true" style="--c: var(--you)">
-          <span class="num">01 Plan</span>
-          <strong>Say it once</strong>
-          <span
-            >Tell the PM agent what you want. It splits the work into tasks, picks owners, and asks
-            you only when a choice is yours.</span
-          >
-        </button>
+    <div class="head-row">
+      <h2><span>A task has four stops.</span> <span>You’re needed at one.</span></h2>
+      <p class="sub">
+        Everything between your first sentence and the merge happens without you carrying a single
+        message.
+      </p>
+    </div>
+    <ol class="stations" data-reveal>
+      <li style="--c: var(--you)">
+        <img
+          src="brand/step-queue-ink.webp"
+          alt="A violet cube with task cards lined up behind it"
+          width="960"
+          height="720"
+          loading="lazy"
+        />
+        <p class="num">01 Plan</p>
+        <h3>Say it once</h3>
+        <p>
+          Tell the PM agent what you want. It splits the work into tasks, picks owners, and asks you
+          only when a choice is yours.
+        </p>
       </li>
-      <li>
-        <button type="button" data-tab aria-pressed="false" style="--c: var(--claude)">
-          <span class="num">02 Build</span>
-          <strong>Agents claim and build</strong>
-          <span
-            >The orchestrator wakes an engineer the moment a task is ready. Every code task gets its
-            own git worktree, so parallel work never collides.</span
-          >
-        </button>
+      <li style="--c: var(--claude)">
+        <img
+          src="brand/step-handoff-ink.webp"
+          alt="An orange cube passing a task card to a cyan cube"
+          width="960"
+          height="720"
+          loading="lazy"
+        />
+        <p class="num">02 Build</p>
+        <h3>Agents claim and build</h3>
+        <p>
+          The orchestrator wakes an engineer the moment a task is ready. Every code task gets its
+          own git worktree, so parallel work never collides.
+        </p>
       </li>
-      <li>
-        <button type="button" data-tab aria-pressed="false" style="--c: var(--codex)">
-          <span class="num">03 Review</span>
-          <strong>Another provider checks it</strong>
-          <span
-            >Claude’s work goes to a Codex reviewer, and Codex’s goes to Claude. Changes go back to
-            the owner with notes.</span
-          >
-        </button>
+      <li style="--c: var(--codex)">
+        <img
+          src="brand/step-review-ink.webp"
+          alt="A cyan cube and an orange cube with an approved card between them"
+          width="960"
+          height="720"
+          loading="lazy"
+        />
+        <p class="num">03 Review</p>
+        <h3>Another provider checks it</h3>
+        <p>
+          Claude’s work goes to a Codex reviewer, and Codex’s goes to Claude. Changes go back to the
+          owner with notes.
+        </p>
       </li>
-      <li>
-        <button type="button" data-tab aria-pressed="false" style="--c: var(--orchestrator)">
-          <span class="num">04 Ship</span>
-          <strong>Your tests decide</strong>
-          <span
-            >The orchestrator rebases approved work and runs your checks. Green merges. Red goes
-            back to the owner with the log.</span
-          >
-        </button>
+      <li style="--c: var(--orchestrator)">
+        <img
+          src="brand/step-merge-ink.webp"
+          alt="Four cubes together with a stack of finished cards on top"
+          width="960"
+          height="720"
+          loading="lazy"
+        />
+        <p class="num">04 Ship</p>
+        <h3>Your tests decide</h3>
+        <p>
+          The orchestrator rebases approved work and runs your checks. Green merges. Red goes back
+          to the owner with the log.
+        </p>
       </li>
     </ol>
-    <figure class="schematic" data-net>
-      <svg class="net" data-stage="0" viewBox="0 0 720 680" role="img" aria-labelledby="net-title">
-        <title id="net-title">
-          How a task moves through a swarm of agents from several AI providers: you, the PM agent
-          and a triage agent plan it, engineers build it in parallel, a reviewer from another
-          provider checks it, and the orchestrator runs the checks and merges it.
-        </title>
-        <g class="grid" aria-hidden="true">
-          <line x1="0" y1="0" x2="0" y2="680"></line>
-          <line x1="40" y1="0" x2="40" y2="680"></line>
-          <line x1="80" y1="0" x2="80" y2="680"></line>
-          <line x1="120" y1="0" x2="120" y2="680"></line>
-          <line x1="160" y1="0" x2="160" y2="680"></line>
-          <line x1="200" y1="0" x2="200" y2="680"></line>
-          <line x1="240" y1="0" x2="240" y2="680"></line>
-          <line x1="280" y1="0" x2="280" y2="680"></line>
-          <line x1="320" y1="0" x2="320" y2="680"></line>
-          <line x1="360" y1="0" x2="360" y2="680"></line>
-          <line x1="400" y1="0" x2="400" y2="680"></line>
-          <line x1="440" y1="0" x2="440" y2="680"></line>
-          <line x1="480" y1="0" x2="480" y2="680"></line>
-          <line x1="520" y1="0" x2="520" y2="680"></line>
-          <line x1="560" y1="0" x2="560" y2="680"></line>
-          <line x1="600" y1="0" x2="600" y2="680"></line>
-          <line x1="640" y1="0" x2="640" y2="680"></line>
-          <line x1="680" y1="0" x2="680" y2="680"></line>
-          <line x1="720" y1="0" x2="720" y2="680"></line>
-          <line x1="0" y1="0" x2="720" y2="0"></line>
-          <line x1="0" y1="40" x2="720" y2="40"></line>
-          <line x1="0" y1="80" x2="720" y2="80"></line>
-          <line x1="0" y1="120" x2="720" y2="120"></line>
-          <line x1="0" y1="160" x2="720" y2="160"></line>
-          <line x1="0" y1="200" x2="720" y2="200"></line>
-          <line x1="0" y1="240" x2="720" y2="240"></line>
-          <line x1="0" y1="280" x2="720" y2="280"></line>
-          <line x1="0" y1="320" x2="720" y2="320"></line>
-          <line x1="0" y1="360" x2="720" y2="360"></line>
-          <line x1="0" y1="400" x2="720" y2="400"></line>
-          <line x1="0" y1="440" x2="720" y2="440"></line>
-          <line x1="0" y1="480" x2="720" y2="480"></line>
-          <line x1="0" y1="520" x2="720" y2="520"></line>
-          <line x1="0" y1="560" x2="720" y2="560"></line>
-          <line x1="0" y1="600" x2="720" y2="600"></line>
-          <line x1="0" y1="640" x2="720" y2="640"></line>
-          <line x1="0" y1="680" x2="720" y2="680"></line>
-        </g>
-        <g class="e s0" style="--c: var(--you)">
-          <path class="edge" d="M360 40 V80 H160 V120"></path>
-          <path class="flow" d="M360 40 V80 H160 V120"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="1.9s"
-              repeatCount="indefinite"
-              path="M360 40 V80 H160 V120"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s0" style="--c: var(--you)">
-          <path class="edge" d="M360 40 V80 H560 V120"></path>
-          <path class="flow" d="M360 40 V80 H560 V120"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="1.9s"
-              repeatCount="indefinite"
-              path="M360 40 V80 H560 V120"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s0" style="--c: var(--claude)">
-          <path class="edge" d="M160 120 V230 H300"></path>
-          <path class="flow" d="M160 120 V230 H300"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M160 120 V230 H300"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s0" style="--c: var(--jev)">
-          <path class="edge" d="M560 120 V230 H420"></path>
-          <path class="flow" d="M560 120 V230 H420"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M560 120 V230 H420"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s1" style="--c: var(--claude)">
-          <path class="edge" d="M310 252 V290 H80 V340"></path>
-          <path class="flow" d="M310 252 V290 H80 V340"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.0s"
-              repeatCount="indefinite"
-              path="M310 252 V290 H80 V340"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s1" style="--c: var(--codex)">
-          <path class="edge" d="M340 252 V310 H260 V340"></path>
-          <path class="flow" d="M340 252 V310 H260 V340"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M340 252 V310 H260 V340"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s1" style="--c: var(--grok)">
-          <path class="edge" d="M380 252 V310 H460 V340"></path>
-          <path class="flow" d="M380 252 V310 H460 V340"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M380 252 V310 H460 V340"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s1" style="--c: var(--gemini)">
-          <path class="edge" d="M410 252 V290 H640 V340"></path>
-          <path class="flow" d="M410 252 V290 H640 V340"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M410 252 V290 H640 V340"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s2" style="--c: var(--codex)">
-          <path class="edge" d="M80 340 V640 H360 V580"></path>
-          <path class="flow" d="M80 340 V640 H360 V580"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.0s"
-              repeatCount="indefinite"
-              path="M80 340 V640 H360 V580"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s2" style="--c: var(--grok)">
-          <path class="edge" d="M260 340 V520 H580 V580"></path>
-          <path class="flow" d="M260 340 V520 H580 V580"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M260 340 V520 H580 V580"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s2" style="--c: var(--claude)">
-          <path class="edge" d="M460 340 V540 H140 V580"></path>
-          <path class="flow" d="M460 340 V540 H140 V580"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M460 340 V540 H140 V580"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s2" style="--c: var(--grok)">
-          <path class="edge" d="M640 340 V600 H580"></path>
-          <path class="flow" d="M640 340 V600 H580"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M640 340 V600 H580"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s3" style="--c: var(--orchestrator)">
-          <path class="edge" d="M140 580 V500 H360 V468"></path>
-          <path class="flow" d="M140 580 V500 H360 V468"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M140 580 V500 H360 V468"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s3" style="--c: var(--orchestrator)">
-          <path class="edge" d="M580 580 V500 H360"></path>
-          <path class="flow" d="M580 580 V500 H360"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion
-              dur="2.1s"
-              repeatCount="indefinite"
-              path="M580 580 V500 H360"
-            ></animateMotion>
-          </rect>
-        </g>
-        <g class="e s3" style="--c: var(--orchestrator)">
-          <path class="edge" d="M360 580 V468"></path>
-          <path class="flow" d="M360 580 V468"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion dur="2.1s" repeatCount="indefinite" path="M360 580 V468"></animateMotion>
-          </rect>
-        </g>
-        <g class="e s3" style="--c: var(--orchestrator)">
-          <path class="edge" d="M360 432 V252"></path>
-          <path class="flow" d="M360 432 V252"></path>
-          <rect class="packet" x="-3" y="-3" width="6" height="6">
-            <animateMotion dur="2.1s" repeatCount="indefinite" path="M360 432 V252"></animateMotion>
-          </rect>
-        </g>
-        <g class="hub s0 s1 s3" style="--c: var(--fg)">
-          <rect x="300" y="208" width="120" height="44"></rect>
-          <text x="360" y="235" text-anchor="middle">queue</text>
-        </g>
-        <g class="hub s3" style="--c: var(--orchestrator)">
-          <rect x="288" y="432" width="144" height="36"></rect>
-          <text x="360" y="455" text-anchor="middle">orchestrator</text>
-        </g>
-        <g class="n s0" style="--c: var(--you)">
-          <rect x="353" y="33" width="14" height="14"></rect>
-          <text x="376" y="45" text-anchor="start">human:you</text>
-        </g>
-        <g class="n s0" style="--c: var(--claude)">
-          <rect x="153" y="113" width="14" height="14"></rect>
-          <text x="176" y="125" text-anchor="start">claude:pm</text>
-        </g>
-        <g class="n s0" style="--c: var(--jev)">
-          <rect x="553" y="113" width="14" height="14"></rect>
-          <text x="544" y="125" text-anchor="end">jev:triage</text>
-        </g>
-        <g class="n s1 s2" style="--c: var(--claude)">
-          <rect x="73" y="333" width="14" height="14"></rect>
-          <text x="80" y="370" text-anchor="middle">claude:engineer</text>
-        </g>
-        <g class="n s1 s2" style="--c: var(--codex)">
-          <rect x="253" y="333" width="14" height="14"></rect>
-          <text x="260" y="370" text-anchor="middle">codex:engineer</text>
-        </g>
-        <g class="n s1 s2" style="--c: var(--grok)">
-          <rect x="453" y="333" width="14" height="14"></rect>
-          <text x="460" y="370" text-anchor="middle">grok:engineer</text>
-        </g>
-        <g class="n s1 s2" style="--c: var(--gemini)">
-          <rect x="633" y="333" width="14" height="14"></rect>
-          <text x="640" y="370" text-anchor="middle">gemini:qa</text>
-        </g>
-        <g class="n s2 s3" style="--c: var(--claude)">
-          <rect x="133" y="573" width="14" height="14"></rect>
-          <text x="140" y="610" text-anchor="middle">claude:reviewer</text>
-        </g>
-        <g class="n s2 s3" style="--c: var(--codex)">
-          <rect x="353" y="573" width="14" height="14"></rect>
-          <text x="360" y="610" text-anchor="middle">codex:reviewer</text>
-        </g>
-        <g class="n s2 s3" style="--c: var(--grok)">
-          <rect x="573" y="573" width="14" height="14"></rect>
-          <text x="580" y="610" text-anchor="middle">grok:reviewer</text>
-        </g>
-      </svg>
-      <figcaption class="legend">
-        <span style="--c: var(--you)">you</span>
-        <span style="--c: var(--claude)">Claude</span>
-        <span style="--c: var(--codex)">Codex</span>
-        <span style="--c: var(--grok)">Grok<small>next</small></span>
-        <span style="--c: var(--gemini)">Gemini<small>next</small></span>
-        <span style="--c: var(--jev)">Jev<small>next</small></span>
-        <span style="--c: var(--orchestrator)">orchestrator</span>
-      </figcaption>
-    </figure>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>03</b> What you install</p>
+    <p class="label"><b>03</b> The team</p>
+    <div class="head-row">
+      <h2><span>Four seats.</span> <span>One of them is yours.</span></h2>
+      <p class="sub">
+        Each tile in the logo is someone who does the work. The colors mean the same thing
+        everywhere in the app: who did this.
+      </p>
+    </div>
+    <ul class="floor" data-reveal>
+      <li style="--c: var(--you)">
+        <img src="brand/tile-you-hero.png" alt="" width="128" height="128" loading="lazy" />
+        <p class="role">Decides</p>
+        <h3>You</h3>
+        <p>
+          You say what to build and make the calls only a human should: money, accounts, publishing,
+          deletes. That is the whole job.
+        </p>
+      </li>
+      <li style="--c: var(--claude)">
+        <img src="brand/tile-claude-hero.png" alt="" width="128" height="128" loading="lazy" />
+        <p class="role">Builds and reviews</p>
+        <h3>Claude</h3>
+        <p>
+          Claude Code, on the plan you already pay for. Plans, writes, tests, and reviews whatever
+          Codex wrote.
+        </p>
+      </li>
+      <li style="--c: var(--codex)">
+        <img src="brand/tile-codex-hero.png" alt="" width="128" height="128" loading="lazy" />
+        <p class="role">Builds and reviews</p>
+        <h3>Codex</h3>
+        <p>
+          The second opinion you used to fetch by hand. It reviews Claude’s work, and Claude reviews
+          its work. Nobody grades their own.
+        </p>
+      </li>
+      <li style="--c: var(--orchestrator)">
+        <img
+          src="brand/tile-orchestrator-hero.png"
+          alt=""
+          width="128"
+          height="128"
+          loading="lazy"
+        />
+        <p class="role">Keeps the floor running</p>
+        <h3>Orchestrator</h3>
+        <p>
+          No model, no opinions. It wakes the right agent, enforces your limits, runs your tests and
+          merges what passes.
+        </p>
+      </li>
+    </ul>
+    <p class="bench">
+      <b>Next on the bench</b>
+      <span
+        ><img src="brand/tile-grok.png" alt="" width="28" height="28" loading="lazy" />Grok</span
+      >
+      <span
+        ><img
+          src="brand/tile-gemini.png"
+          alt=""
+          width="28"
+          height="28"
+          loading="lazy"
+        />Gemini</span
+      >
+      <span><img src="brand/tile-jev.png" alt="" width="28" height="28" loading="lazy" />Jev</span>
+      <span class="plain">Any command-line agent you configure works today.</span>
+    </p>
+  </div>
+</section>
+
+<section class="section tint">
+  <div class="wrap">
+    <p class="label"><b>04</b> What you install</p>
     <h2><span>Three parts.</span> <span>All on your machine.</span></h2>
     <div class="parts" data-reveal>
       <div>
@@ -551,6 +432,87 @@
         </p>
       </div>
     </div>
+
+    <div class="vignettes" data-reveal>
+      <figure class="mock">
+        <div class="mock-bar"><span>Inbox</span><b>1 needs you</b></div>
+        <div class="mock-body">
+          <div class="ask">
+            <picture>
+              <source
+                srcset="brand/status-needs-you-still.png"
+                media="(prefers-reduced-motion: reduce)"
+              />
+              <img
+                src="brand/status-needs-you.webp"
+                alt="The pink tile knocking: the task needs you"
+                width="64"
+                height="64"
+                loading="lazy"
+              />
+            </picture>
+            <div>
+              <p class="meta">Question · <b style="--c: var(--codex)">codex:engineer</b></p>
+              <p class="q">Retry a failed payment for 24 hours or 72?</p>
+            </div>
+          </div>
+          <p class="rec"><b>Recommends</b> 72 hours. Card networks retry for three days.</p>
+          <p class="btns">
+            <span class="btn go">Accept recommendation</span><span class="btn">Edit first</span>
+          </p>
+        </div>
+        <figcaption>
+          <strong>Inbox.</strong> The only list you have to read. Every question arrives with the
+          agent’s pick, ready to accept.
+        </figcaption>
+      </figure>
+      <figure class="mock">
+        <div class="mock-bar"><span>Runs</span><b>3 live</b></div>
+        <div class="mock-body">
+          <ul class="runs">
+            <li>
+              <img src="brand/tile-claude.png" alt="" width="28" height="28" loading="lazy" />
+              <span><b style="--c: var(--claude)">claude:engineer</b>Fix checkout on Safari</span>
+              <em>18 min</em>
+            </li>
+            <li>
+              <img src="brand/tile-codex.png" alt="" width="28" height="28" loading="lazy" />
+              <span><b style="--c: var(--codex)">codex:reviewer</b>Reviewing the sale banner</span>
+              <em>4 min</em>
+            </li>
+            <li>
+              <img src="brand/tile-orchestrator.png" alt="" width="28" height="28" loading="lazy" />
+              <span><b style="--c: var(--orchestrator)">orchestrator</b>Running your tests</span>
+              <em>41 s</em>
+            </li>
+            <li class="done">
+              <img src="brand/tile-claude.png" alt="" width="28" height="28" loading="lazy" />
+              <span><b style="--c: var(--claude)">claude:docs</b>README for the payments API</span>
+              <em>merged</em>
+            </li>
+          </ul>
+        </div>
+        <figcaption>
+          <strong>Runs.</strong> Who is doing what right now, with the log, the tokens and the
+          clock. One button stops any of them.
+        </figcaption>
+      </figure>
+      <figure class="mock">
+        <div class="mock-bar"><span>Chat with the PM</span><b>claude:pm</b></div>
+        <div class="mock-body chat">
+          <p class="me">Holiday sale goes live on the 27th. Break it down.</p>
+          <p class="pm">
+            Six tasks. The price rule merges first, so the badges show real prices. One question for
+            you: free shipping, yes or no?
+          </p>
+          <p class="me">Yes.</p>
+        </div>
+        <figcaption>
+          <strong>Chat.</strong> Describe the idea once. The PM files the tasks, routes them and
+          comes back with the one thing it can’t decide.
+        </figcaption>
+      </figure>
+    </div>
     <p class="isnt">
       <b>Not in the box</b>
       <span
@@ -558,65 +520,81 @@
         pay for, against a git repo you own.</span
       >
     </p>
+  </div>
+</section>
 
-    <figure class="annotated" data-reveal>
-      <div class="shot">
-        <img
-          src="media/task.png"
-          alt="The SwarmUp desktop app: the board on the left, and a task thread on the right with its owner, reviewer and history"
-          width="1600"
-          height="960"
-        />
-        <span class="pin" style="left: 35%; top: 17%">1</span>
-        <span class="pin" style="left: 70.5%; top: 19%">2</span>
-        <span class="pin" style="left: 72%; top: 44%">3</span>
-        <span class="pin" style="left: 73.5%; top: 68%">4</span>
-        <span class="pin" style="left: 79%; top: 87%">5</span>
-      </div>
-      <figcaption>
-        <ol class="pins">
-          <li>The board shows what every agent is on, live.</li>
-          <li>Owner and reviewer come from different providers.</li>
-          <li>Every claim, start and progress note is an event with a time.</li>
-          <li>The review request goes to the other provider’s reviewer.</li>
-          <li>Comment or @mention an agent, and it lands in that agent’s inbox.</li>
-        </ol>
-      </figcaption>
-    </figure>
-
-    <div class="shots" data-reveal>
-      <figure>
-        <img
-          src="media/chat.png"
-          alt="Chat with the PM agent: one message becomes three tasks"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Chat.</strong> Describe the idea. The PM files the tasks and routes them.
-        </figcaption>
+<section class="section bill">
+  <div class="wrap bill-grid">
+    <div data-reveal>
+      <figure class="receipt-wrap" aria-label="A sample week on a SwarmUp queue, as a receipt">
+        <div class="receipt">
+          <header>
+            <strong>SwarmUp</strong>
+            <span>One week, itemized</span>
+            <span>1 human · 5 agents</span>
+          </header>
+          <hr />
+          <dl>
+            <div>
+              <dt>Tasks shipped</dt>
+              <dd>41</dd>
+            </div>
+            <div>
+              <dt>Reviewed by another model</dt>
+              <dd>41</dd>
+            </div>
+            <div>
+              <dt>Merges refused, tests red</dt>
+              <dd>6</dd>
+            </div>
+            <div>
+              <dt>“Should I proceed?”</dt>
+              <dd>0</dd>
+            </div>
+            <div>
+              <dt>Context pasted by hand</dt>
+              <dd>0</dd>
+            </div>
+            <div>
+              <dt>Terminals you watched</dt>
+              <dd>0</dd>
+            </div>
+            <div>
+              <dt>Questions that reached you</dt>
+              <dd>9</dd>
+            </div>
+          </dl>
+          <hr />
+          <dl>
+            <div>
+              <dt>Agent hours</dt>
+              <dd>63.5</dd>
+            </div>
+            <div class="total">
+              <dt>Your hours</dt>
+              <dd>1.2</dd>
+            </div>
+          </dl>
+          <hr />
+          <p class="thanks">Thank you for not babysitting</p>
+          <div class="barcode" aria-hidden="true"></div>
+          <small>Sample receipt. Yours prints with: swarmup wrapped</small>
+        </div>
       </figure>
-      <figure>
-        <img
-          src="media/runs.png"
-          alt="Live agent runs with their logs, tokens and time"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Runs.</strong> What every agent is doing right now, with its log, tokens and
-          clock.
-        </figcaption>
-      </figure>
-      <figure>
-        <img
-          src="media/inbox.png"
-          alt="The inbox with one question to answer, the agent's recommended pick and a button to accept it"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Inbox.</strong> The only list you have to read. Here: one question, with the
-          agent’s pick ready to accept.
-        </figcaption>
-      </figure>
+    </div>
+    <div>
+      <p class="label"><b>05</b> The bill</p>
+      <h2>Work you didn’t do, itemized.</h2>
+      <p class="sub">
+        The interesting lines are the zeros. Nobody asked you to confirm the obvious, nobody needed
+        you to carry a summary across the room, and the six merges that should not have happened did
+        not happen.
+      </p>
+      <p class="sub">
+        This one is a sample week for one founder and five agents. Your own queue keeps the real
+        count, and <code>swarmup wrapped</code> prints it whenever you want to feel better about
+        your Friday.
+      </p>
     </div>
   </div>
 </section>
@@ -624,7 +602,7 @@
 <section class="section tint">
   <div class="wrap file-grid">
     <div>
-      <p class="label"><b>04</b> Plain files</p>
+      <p class="label"><b>06</b> Plain files</p>
       <h2><span>No database.</span> <span>A folder.</span></h2>
       <p class="sub">
         Every task is a folder in your repo: one <code>task.md</code>, plus one Markdown file per
@@ -632,63 +610,69 @@
         conflicts. Read it, grep it, diff it. If SwarmUp vanished tomorrow, your history would still
         be plain text in git.
       </p>
-      <pre class="tree"><code>tasks/AO-0175/
-├── task.md
+      <pre class="tree"><code>tasks/SHOP-0412/
+├── task.md                        Fix checkout on Safari
 └── events/
-    ├── 01M6ZP9T…-claude-engineer.md   claim
-    ├── 01M6ZQH8…-claude-engineer.md   review
-    ├── 01M6ZQQY…-codex-qa.md          verdict
-    └── 01M6ZTFB…-opsd-merge.md        verdict</code></pre>
+    ├── …-claude-engineer.md       claim
+    ├── …-claude-engineer.md       review
+    ├── …-codex-reviewer.md        verdict: changes
+    ├── …-codex-reviewer.md        verdict: approve
+    └── …-orchestrator-merge.md    merged</code></pre>
     </div>
     <div data-reveal>
       <div class="file-card">
-        <p class="file-name">events/01M6ZQQY…-codex-qa.md</p>
+        <p class="file-name">events/…-codex-reviewer.md</p>
         <pre class="file"><code>---
 type: verdict
 verdict: approve
-waited_minutes: 4
-actor: codex:qa
-at: 2026-11-09T08:45:35.338Z
+waited_minutes: 3
+actor: codex:reviewer
 ---
 
-AO-0175 is correctly scoped: ecc8e3ae removes the
-obsolete Codex worktree exclusion, documents the
-restored signed-out handoff behavior, and updates
-the regression test.</code></pre>
+SHOP-0412 works on Safari 18 now. The fix is six
+lines in the address form. I ran the three new
+tests and the forty old ones. All green.</code></pre>
         <span class="stamp" aria-hidden="true">Approved</span>
       </div>
       <table class="timeline">
         <caption>
-          AO-0175 on our own queue, 2026-11-09 (UTC)
+          An example task, start to merge
         </caption>
         <tbody>
           <tr>
-            <td>08:20</td>
+            <td>09:14</td>
             <td class="who" style="--c: var(--claude)">claude:engineer</td>
             <td>claims it and starts</td>
           </tr>
           <tr>
-            <td>08:41</td>
+            <td>09:41</td>
             <td class="who" style="--c: var(--claude)">claude:engineer</td>
-            <td>asks codex:qa for a review: 22 min, 41,070 tokens</td>
+            <td>asks for a review</td>
           </tr>
           <tr>
-            <td>08:45</td>
-            <td class="who" style="--c: var(--codex)">codex:qa</td>
-            <td>approves, 4 min after the request</td>
+            <td>09:44</td>
+            <td class="who" style="--c: var(--codex)">codex:reviewer</td>
+            <td>sends it back: “The test passes because you deleted it.”</td>
           </tr>
           <tr>
-            <td>09:33</td>
+            <td>10:02</td>
+            <td class="who" style="--c: var(--codex)">codex:reviewer</td>
+            <td>approves the second try</td>
+          </tr>
+          <tr class="red">
+            <td>10:05</td>
             <td class="who" style="--c: var(--orchestrator)">orchestrator</td>
-            <td>
-              refuses the merge: <code>npm test</code> failed on the rebased branch. Back to the
-              owner, with the log.
-            </td>
+            <td>refuses the merge: 2 tests red on the rebased branch</td>
+          </tr>
+          <tr>
+            <td>10:21</td>
+            <td class="who" style="--c: var(--orchestrator)">orchestrator</td>
+            <td>merges the fix. Nobody pinged you.</td>
           </tr>
         </tbody>
       </table>
       <p class="fine">
-        An approval is not a merge. The last row is the reason the orchestrator exists.
+        An approval is not a merge. The red row is the reason the orchestrator exists.
       </p>
     </div>
   </div>
@@ -696,7 +680,7 @@ the regression test.</code></pre>
 
 <section class="section ink">
   <div class="wrap">
-    <p class="label"><b>05</b> House rules</p>
+    <p class="label"><b>07</b> House rules</p>
     <div class="head-row">
       <h2><span>Six rules.</span> <span>No exceptions for the talented.</span></h2>
       <p class="sub">
@@ -736,7 +720,7 @@ the regression test.</code></pre>
 <section class="section" id="founder">
   <div class="wrap founder-grid">
     <div class="founder-copy">
-      <p class="label"><b>06</b> Who built this</p>
+      <p class="label"><b>08</b> Who built this</p>
       <h2>One human on the payroll.</h2>
       <p class="first">
         I’m Dawid. I’ve spent 20 years in performance marketing, which trains one habit above all
@@ -771,7 +755,7 @@ the regression test.</code></pre>
 
 <section class="section tint">
   <div class="wrap">
-    <p class="label"><b>07</b> Roadmap</p>
+    <p class="label"><b>09</b> Roadmap</p>
     <div class="head-row">
       <h2>Shipped, fresh, planned.</h2>
       <p class="sub">
@@ -837,7 +821,7 @@ the regression test.</code></pre>
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>08</b> Install</p>
+    <p class="label"><b>10</b> Install</p>
     <div class="head-row">
       <h2>Fifteen minutes to your first task.</h2>
       <p class="sub"><a class="arrow" href="install.html">Read the full install guide</a></p>
@@ -862,7 +846,7 @@ the regression test.</code></pre>
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>09</b> Questions</p>
+    <p class="label"><b>11</b> Questions</p>
     <h2>Fair questions.</h2>
     <dl class="faq">
       <div>
@@ -911,14 +895,36 @@ the regression test.</code></pre>
   </div>
 </section>
 
-<section class="closing">
-  <div class="wrap">
-    <h2><span>Give them a queue.</span> <span>Take your day back.</span></h2>
-    <p>Free, MIT licensed, and on your machine in fifteen minutes.</p>
-    <div class="actions">
-      <a class="button dark" href="download.html">Download for Windows</a>
-      <a class="arrow" href="docs/index.html">Read the docs</a>
+<section class="closing ink">
+  <div class="wrap closing-grid">
+    <div>
+      <h2><span>Give them a queue.</span> <span class="hl">Take your day back.</span></h2>
+      <p>Free, MIT licensed, and on your machine in fifteen minutes.</p>
+      <div class="actions">
+        <a class="button" href="download.html">Download for Windows</a>
+        <a class="arrow" href="docs/index.html">Read the docs</a>
+      </div>
     </div>
+    <picture>
+      <source srcset="brand/status-done-still.png" media="(prefers-reduced-motion: reduce)" />
+      <img
+        class="spin"
+        src="brand/spin.webp"
+        alt="The SwarmUp mark, turning"
+        width="256"
+        height="256"
+        loading="lazy"
+      />
+    </picture>
   </div>
 </section>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.min.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+</script>
+<script type="module" src="hero.js"></script>
 <script src="site.js" defer></script>

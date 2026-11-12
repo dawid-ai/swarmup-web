@@ -6,45 +6,58 @@ live without an app release.
 
 ## What is where
 
-| Path                 | What it is                                                                      |
-| -------------------- | ------------------------------------------------------------------------------- |
-| `pages/home.html`    | The home page body. The build wraps it in the header and footer.                |
-| `pages/founder.html` | The founder page body: who builds SwarmUp, and how to work with him.            |
-| `pages/install.md`   | The install guide, written in Markdown.                                         |
-| `assets/site.css`    | The theme for every page, the docs included: paper, ink and one acid accent.    |
-| `assets/site.js`     | Steps the home page schematic through its stages, and fades sections in.        |
-| `assets/logo.svg`    | The mark in the header (four squares: you, two AI providers, the orchestrator). |
-| `assets/favicon.svg` | The browser tab icon.                                                           |
-| `assets/og.png`      | The 1200 x 630 card a shared link shows: the headline and the receipt.          |
-| `schematic.mjs`      | Draws the schematic SVG in `pages/home.html` from node and line lists.          |
-| `build.mjs`          | Builds the site into `dist/site`: pages, download page, docs, changelog, 404.   |
-| `scripts/`           | The docs build (`build-docs.mjs`) and the link check (`check-docs-links.mjs`).  |
-| `test/`              | Tests of the site and docs builds on scratch repos, and of the real home page.  |
-| `.github/workflows/` | `pages.yml` builds and deploys the site to GitHub Pages.                        |
+| Path                 | What it is                                                                       |
+| -------------------- | -------------------------------------------------------------------------------- |
+| `pages/home.html`    | The home page body. The build wraps it in the header and footer.                 |
+| `pages/founder.html` | The founder page body: who builds SwarmUp, and how to work with him.             |
+| `pages/install.md`   | The install guide, written in Markdown.                                          |
+| `assets/site.css`    | The theme for every page, the docs included: paper, ink and one acid accent.     |
+| `assets/site.js`     | Presses the hero's four seats in turn, and fades sections in.                    |
+| `assets/hero.js`     | Draws the mark in 3D in the home page hero, from `brand/icon.glb`.               |
+| `assets/brand/`      | Renders of the 3D brand kit: lockups, tiles, illustrations, status loops.        |
+| `assets/vendor/`     | three.js 0.165 (MIT), which `hero.js` loads from the site itself.                |
+| `assets/logo.svg`    | The flat mark: the source of the tiles, and the header on a site without brand/. |
+| `assets/favicon.svg` | The browser tab icon; `favicon.ico` is its fallback.                             |
+| `assets/og.png`      | The 1200 x 630 card a shared link shows: the headline and the mark.              |
+| `build.mjs`          | Builds the site into `dist/site`: pages, download page, docs, changelog, 404.    |
+| `scripts/`           | The docs build (`build-docs.mjs`) and the link check (`check-docs-links.mjs`).   |
+| `test/`              | Tests of the site and docs builds on scratch repos, and of the real home page.   |
+| `.github/workflows/` | `pages.yml` builds and deploys the site to GitHub Pages.                         |
 
 Some pages come from files of the tool, [dawid-ai/swarmup](https://github.com/dawid-ai/swarmup), so
 they never drift apart:
 
 - `README.md` and `docs/*.md` become the docs under `/docs`.
 - `UPDATES.md` becomes the changelog page.
-- `docs/media/` holds the screenshots the home page shows.
 - The download page reads the newest release of `dawid-ai/swarmup` from GitHub.
 
-## Numbers on the pages
+## Brand
 
-The receipt and the ticker on the home page, its 56:1 ratio, and the figures on the founder page
-come from SwarmUp's own queue: `swarmup report --days 30` and `swarmup wrapped --days 30`. They
-are typed into the pages, not read at build time. When you refresh them, change the home page,
-the founder page and the date range together, and render `assets/og.png` again, because the card
-shows the same receipt.
+The mark, the colors and the type follow the brand sheet of the 3D brand kit. The files in
+`assets/brand/` are copies of its renders, resized for the web; replace them from the kit, don't
+edit them here. The rules that matter on a page:
+
+- The mark goes on paper or ink only, never on acid, a photo or a gradient.
+- Acid marks one thing per screen. Stamp red means failure and nothing else.
+- Provider colors say who did the work. Keep the tile order: pink, orange, cyan, violet.
+- A moving image has a still: `<picture>` swaps it in under `prefers-reduced-motion`.
+
+## Examples and numbers on the pages
+
+The ticker, the receipt, the example task and the app vignettes on the home page are invented
+examples, written to be recognized. They are not measurements and they name no real project. The
+receipt says so in its last line.
+
+The founder section of the home page and the founder page are the exception: their figures come
+from SwarmUp's own queue (`swarmup report --days 30`). They are typed into the pages, not read at
+build time; change both pages and the date range together.
 
 ## Change the site
 
 Keep a checkout of the tool next to this one: `C:devswarmup` and `C:devswarmup-web`. The
 build reads it from `../swarmup`, or from `--root DIR` or `SWARMUP_TOOL`.
 
-1. Edit the files above. To change the schematic, edit the lists in `schematic.mjs`, then run
-   `npm run schematic`; the tests fail when the page and the lists disagree.
+1. Edit the files above.
 2. Check: `npm run lint`, `npm test`, then `npm run build` and open `dist/site/index.html`.
 3. Publish: push to `main`. The `pages` workflow builds the site against `main` of the tool
    and deploys it to GitHub Pages, which serves it at `swarmup.tech`.

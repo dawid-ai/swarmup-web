@@ -172,9 +172,15 @@ describe('website', () => {
     expect(page(d, 'install.html')).toContain('<main class="prose">');
     expect(page(d, 'index.html')).toContain('<link rel="icon" href="favicon.svg"');
     expect(page(d, 'install.html')).toContain('href="site.css"');
-    expect(page(d, 'site.js')).toContain("querySelector('[data-net] svg.net')");
+    expect(page(d, 'site.js')).toContain("querySelectorAll('[data-tab]')");
     expect(page(d, 'favicon.svg')).toMatch(/^<svg [^>]*xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
     expect(page(d, '404.html')).toContain('href="/favicon.svg"');
+    // The header shows the rendered lockup, from the site root on every page.
+    expect(page(d, 'index.html')).toContain('<img src="brand/lockup-ink.png" alt="SwarmUp"');
+    expect(page(d, 'docs/protocol.html')).toContain('<img src="../brand/lockup-ink.png"');
+    expect(page(d, '404.html')).toContain('<img src="/brand/lockup-ink.png"');
+    expect(existsSync(join(d, 'dist', 'site', 'brand', 'lockup-ink.png'))).toBe(true);
+    expect(existsSync(join(d, 'dist', 'site', 'favicon.ico'))).toBe(true);
     const check = node('check-docs-links.mjs', join(d, 'dist', 'site'));
     expect(check.code, check.out).toBe(0);
   });
@@ -266,16 +272,24 @@ describe('website', () => {
     expect(check.code, check.out).toBe(0);
   });
 
-  it('stops the SVG packet animation under reduced motion (AO-0216)', () => {
+  it('writes the 3D mark with its model and library, and holds still under reduced motion', () => {
     const d = repo();
     expect(node('../build.mjs', '--root', d, '--offline').code).toBe(0);
+    for (const file of [
+      'hero.js',
+      'brand/icon.glb',
+      'vendor/three/three.module.min.js',
+      'vendor/three/addons/loaders/GLTFLoader.js',
+    ]) {
+      expect(existsSync(join(d, 'dist', 'site', file)), file).toBe(true);
+    }
+    expect(page(d, 'hero.js')).toContain('prefers-reduced-motion');
     const css = page(d, 'site.css');
     const reduced = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce)'));
-    expect(reduced).toMatch(/\.net \.packet\s*\{\s*display: none !important;\s*\}/);
-    expect(page(d, 'site.js')).toContain('svg.pauseAnimations()');
+    expect(reduced).toMatch(/animation: none !important/);
   });
 
-  it('builds the real home page: four steps, each with its schematic lines (AO-0216)', () => {
+  it('builds the real home page: the 3D mark, four seats and the brand images', () => {
     const real =
       process.env.SWARMUP_TOOL ?? fileURLToPath(new URL('../../swarmup/', import.meta.url));
     const out = mkdtempSync(join(tmpdir(), 'ops-site-real-'));
@@ -283,15 +297,17 @@ describe('website', () => {
     const r = node('../build.mjs', '--root', real, '--out', out, '--offline');
     expect(r.code, r.out).toBe(0);
     const home = readFileSync(join(out, 'index.html'), 'utf8');
-    // Without JavaScript all four steps show as text and the schematic stays on the first stage.
+    // Without JavaScript the still render shows, with all four seats as text under it.
     expect(home.match(/data-tab\b/g)).toHaveLength(4);
     expect(home).not.toMatch(/<button[^>]*data-tab[^>]*hidden/);
-    expect(home).toContain('<svg class="net" data-stage="0"');
-    for (const s of [0, 1, 2, 3]) expect(home).toContain(`class="e s${s}"`);
-    expect(readFileSync(join(out, 'site.js'), 'utf8')).toContain("querySelectorAll('[data-tab]')");
-    for (const shot of ['task.png', 'chat.png', 'runs.png', 'inbox.png']) {
-      expect(existsSync(join(out, 'media', shot))).toBe(true);
-    }
+    expect(home).toMatch(/data-hero>\s*<img\s+src="brand\/mark-hero\.webp"/);
+    expect(home).toContain('"three": "./vendor/three/three.module.min.js"');
+    expect(home).toContain('<script type="module" src="hero.js">');
+    // Every brand image the page shows is in the site, and no app screenshot is.
+    const images = [...home.matchAll(/\s(?:src|srcset)="(brand\/[^"]+)"/g)].map((m) => m[1]);
+    expect(images.length).toBeGreaterThan(20);
+    for (const image of images) expect(existsSync(join(out, image)), image).toBe(true);
+    expect(home).not.toContain('media/');
     // No page names the product's former brand, and no internal document is built.
     const built = (dir: string): string[] =>
       readdirSync(join(out, dir), { withFileTypes: true }).flatMap((e) =>
@@ -308,21 +324,12 @@ describe('website', () => {
       expect(existsSync(join(out, 'docs', internal))).toBe(false);
     }
     expect(existsSync(join(out, 'docs', 'swarmup-rename.html'))).toBe(false);
-    // The receipt on the home page and the founder page quote the same 30 days.
+    // The founder section of the home page and the founder page quote the same 30 days. They are
+    // the only measured figures; the receipt and the ticker are examples.
     const founder = readFileSync(join(out, 'founder.html'), 'utf8');
-    for (const figure of ['194', '1,977', '229.8']) {
+    for (const figure of ['1,977', '229.8']) {
       expect(home).toContain(figure);
       expect(founder).toContain(figure);
     }
-  });
-});
-
-describe('home page schematic', () => {
-  it('matches the lists in schematic.mjs (AO-0226)', () => {
-    const r = spawnSync(process.execPath, [join(scripts, '..', 'schematic.mjs'), '--check'], {
-      encoding: 'utf8',
-      windowsHide: true,
-    });
-    expect(r.status, r.stdout + r.stderr).toBe(0);
   });
 });

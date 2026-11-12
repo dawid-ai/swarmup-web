@@ -1,4 +1,4 @@
-/* The swarmup.tech theme: paper and ink with one acid accent. Sections on paper are the default;
+/* The swarmup.tech theme, after the brand sheet: paper and ink with one acid accent. Sections on paper are the default;
    a section with class "ink" flips the same tokens to a dark band. Provider colors (you, Claude,
    Codex, the orchestrator) appear only where they say who did the work. */
 :root {
@@ -10,6 +10,12 @@
   --ink-hi: #1d1d1a;
   --acid: #d2ff3a;
   --stamp: #e23a1e;
+  /* The logo's tiles, on any background */
+  --mark-pink: #e46fb3;
+  --mark-orange: #e8875b;
+  --mark-cyan: #4fc3d9;
+  --mark-violet: #a393ff;
+  --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   --bg: var(--paper);
   --surface: var(--paper-lo);
@@ -115,6 +121,11 @@ header.top {
   text-transform: uppercase;
   text-decoration: none;
 }
+.brand img {
+  display: block;
+  width: auto;
+  height: 32px;
+}
 header.top nav {
   display: flex;
   flex-wrap: wrap;
@@ -194,6 +205,10 @@ footer.bottom {
   color: #959184;
   font: 12.5px var(--mono);
   letter-spacing: 0.04em;
+}
+footer.bottom img {
+  width: auto;
+  height: 24px;
 }
 footer.bottom span {
   margin-right: auto;
@@ -467,9 +482,9 @@ main.wide h2 span {
 }
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 372px;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
   gap: 48px 64px;
-  align-items: start;
+  align-items: center;
 }
 .eyebrow {
   display: flex;
@@ -490,7 +505,7 @@ main.wide h2 span {
   color: var(--acid);
 }
 .hero h1 {
-  font-size: clamp(44px, 6.5vw, 96px);
+  font-size: clamp(44px, 6vw, 88px);
   line-height: 0.9;
 }
 .hero h1 span {
@@ -509,7 +524,7 @@ main.wide h2 span {
   font-size: 20px;
   line-height: 1.5;
 }
-/* The hero loads in steps: the headline lines rise, then the receipt prints. */
+/* The hero loads in steps: the headline lines rise, then the mark. */
 .hero h1 span,
 .hero .eyebrow,
 .hero .lead,
@@ -542,21 +557,30 @@ main.wide h2 span {
   }
 }
 
-/* The receipt: 30 days of the queue that builds SwarmUp, as a till receipt. */
+/* The receipt: a sample week on a queue, as a till receipt. It prints when it scrolls into view. */
 .receipt-wrap {
-  margin: 22px 0 0;
-  transform: rotate(2.2deg);
+  margin: 0;
+  transform: rotate(-2.2deg);
   filter: drop-shadow(0 22px 24px rgba(52, 40, 12, 0.22));
-  animation: print 1.5s steps(16) 0.5s both;
+}
+.reveal-on .bill [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+.reveal-on .bill [data-reveal]:not(.in) .receipt-wrap {
+  clip-path: inset(-40px -40px 100% -40px);
+}
+.reveal-on .bill [data-reveal].in .receipt-wrap {
+  animation: print 1.5s steps(16) both;
 }
 @keyframes print {
   from {
     clip-path: inset(-40px -40px 100% -40px);
-    transform: rotate(2.2deg) translateY(-18px);
+    transform: rotate(-2.2deg) translateY(-18px);
   }
   to {
     clip-path: inset(-40px -40px -60px -40px);
-    transform: rotate(2.2deg);
+    transform: rotate(-2.2deg);
   }
 }
 .receipt {
@@ -659,7 +683,7 @@ main.wide h2 span {
   text-align: center;
 }
 
-/* The ticker: real events from the queue, scrolling. */
+/* The ticker: what a queue sounds like, scrolling. */
 .ticker {
   overflow: hidden;
   border-top: 2px solid var(--ink);
@@ -674,10 +698,14 @@ main.wide h2 span {
   animation-play-state: paused;
 }
 .ticker span {
-  padding: 13px 0 13px 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 0 12px 44px;
 }
-.ticker time {
-  color: var(--muted);
+.ticker img {
+  width: 20px;
+  height: 20px;
 }
 .ticker b {
   color: var(--c, var(--fg));
@@ -751,203 +779,40 @@ main.wide h2 span {
   text-transform: uppercase;
 }
 
-/* How it works: the stepper and the schematic */
-.stops {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: 48px 72px;
-  align-items: center;
-  margin-top: 56px;
-}
-.stepper {
+/* How a task moves: four stops, each with its render */
+.stations {
   list-style: none;
-  margin: 0;
+  margin: 56px -24px 0;
   padding: 0;
-  border-bottom: 1px solid var(--line);
-}
-.stepper button {
   display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 4px 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.stations li {
+  padding: 8px 24px;
+}
+.stations li + li {
+  border-left: 1px solid var(--line-strong);
+}
+.stations img {
+  display: block;
   width: 100%;
-  padding: 22px 20px 24px 18px;
-  border: 0;
-  border-top: 1px solid var(--line);
-  border-left: 4px solid transparent;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-size: 15.5px;
-  line-height: 1.55;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    color 0.3s,
-    background 0.3s;
+  height: auto;
+  margin: 0 0 6px;
+  transition: transform 0.45s var(--ease-rise);
 }
-.stepper button:hover {
-  color: var(--text);
+.stations li:hover img {
+  transform: translateY(-8px);
 }
-.stepper button[aria-pressed='true'] {
-  border-left-color: var(--c);
-  background: var(--surface);
-  color: var(--text);
-}
-.stepper .num {
-  grid-row: span 2;
-  padding-top: 5px;
+.stations .num {
+  margin: 0 0 10px;
   color: var(--c);
   font: 500 12.5px var(--mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.stepper strong {
-  color: var(--fg);
-  font: 800 28px/1 var(--display);
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-}
-.schematic {
-  min-width: 0;
+.stations p {
   margin: 0;
-}
-.net {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 660px;
-  margin: 0 auto;
-  overflow: visible;
-}
-.net .grid line {
-  stroke: var(--grid);
-  stroke-width: 1;
-}
-.net .edge {
-  fill: none;
-  stroke: var(--line-strong);
-  stroke-width: 1.5;
-  transition: stroke 0.4s;
-}
-/* Every line carries a faint, slow flow; the lit stage's lines run bright and fast. */
-.net .flow {
-  fill: none;
-  stroke: var(--c);
-  stroke-opacity: 0.2;
-  stroke-width: 2;
-  stroke-dasharray: 6 10;
-  animation: flow 3.6s linear infinite;
-  transition: stroke-opacity 0.4s;
-}
-.net .packet {
-  display: none;
-  fill: var(--c);
-}
-.net .n rect {
-  fill: var(--bg);
-  stroke: var(--line-strong);
-  stroke-width: 2;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    fill 0.4s,
-    stroke 0.4s;
-}
-.net .n text,
-.net .hub text {
-  /* An outline in the ground color lets lines pass behind the labels. */
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 6px;
-  stroke-linejoin: round;
-  fill: var(--muted);
-  font: 500 14px var(--mono);
-  transition: fill 0.4s;
-}
-.net .hub rect {
-  fill: var(--surface);
-  stroke: var(--line-strong);
-  stroke-width: 1.5;
-  transition: stroke 0.4s;
-}
-.net[data-stage='0'] .s0 .flow,
-.net[data-stage='1'] .s1 .flow,
-.net[data-stage='2'] .s2 .flow,
-.net[data-stage='3'] .s3 .flow {
-  stroke-opacity: 1;
-  animation-duration: 1.2s;
-}
-.net[data-stage='0'] .s0 .packet,
-.net[data-stage='1'] .s1 .packet,
-.net[data-stage='2'] .s2 .packet,
-.net[data-stage='3'] .s3 .packet {
-  display: inline;
-}
-.net[data-stage='0'] .s0 .edge,
-.net[data-stage='1'] .s1 .edge,
-.net[data-stage='2'] .s2 .edge,
-.net[data-stage='3'] .s3 .edge {
-  stroke: var(--c);
-  stroke-opacity: 0.4;
-}
-.net[data-stage='0'] .n.s0 rect,
-.net[data-stage='1'] .n.s1 rect,
-.net[data-stage='2'] .n.s2 rect,
-.net[data-stage='3'] .n.s3 rect {
-  stroke: var(--c);
-  fill: var(--c);
-  animation: pulse 1.6s ease-in-out infinite;
-}
-.net[data-stage='0'] :is(.n, .hub).s0 text,
-.net[data-stage='1'] :is(.n, .hub).s1 text,
-.net[data-stage='2'] :is(.n, .hub).s2 text,
-.net[data-stage='3'] :is(.n, .hub).s3 text {
-  fill: var(--fg);
-}
-.net[data-stage='0'] .hub.s0 rect,
-.net[data-stage='1'] .hub.s1 rect,
-.net[data-stage='2'] .hub.s2 rect,
-.net[data-stage='3'] .hub.s3 rect {
-  stroke: var(--c);
-}
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px 18px;
-  margin-top: 20px;
-  font: 12.5px var(--mono);
-  color: var(--muted);
-}
-.legend span::before {
-  content: '';
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-right: 8px;
-  background: var(--c);
-}
-.legend small {
-  margin-left: 6px;
-  padding: 1px 4px;
-  border: 1px solid var(--line-strong);
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-}
-@keyframes flow {
-  to {
-    stroke-dashoffset: -160;
-  }
+  font-size: 15.5px;
 }
 
 /* What you get */
@@ -987,81 +852,184 @@ main.wide h2 span {
   font-size: 18px;
 }
 .isnt b {
-  color: var(--stamp);
+  padding: 2px 7px;
+  background: var(--ink);
+  color: var(--paper-hi);
   font: 600 12.5px var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.annotated {
-  margin: 72px 0 0;
-  display: grid;
-  gap: 36px;
-}
-.shot {
-  position: relative;
-  border: 2px solid var(--ink);
-  box-shadow: 12px 12px 0 var(--ink);
-}
-.shot img {
-  display: block;
-  width: 100%;
-}
-.pin {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--acid);
-  color: var(--ink);
-  font: 600 14px/26px var(--mono);
-  text-align: center;
-}
-.pins {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  counter-reset: pin;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px 32px;
-  font-size: 15.5px;
-}
-.pins li {
-  counter-increment: pin;
-  display: flex;
-  gap: 12px;
-}
-.pins li::before {
-  content: counter(pin);
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--acid);
-  color: var(--ink);
-  font: 600 12px/22px var(--mono);
-  text-align: center;
-}
-.shots {
+/* The app, drawn: three small windows in the site's own style */
+.vignettes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 36px;
   margin-top: 72px;
 }
-.shots figure {
+.mock {
+  display: flex;
+  flex-direction: column;
   margin: 0;
 }
-.shots img {
-  display: block;
-  border: 2px solid var(--ink);
-  box-shadow: 7px 7px 0 var(--ink);
+.mock-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--ink);
+  color: #f4f1e8;
+  font: 500 12px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
-.shots figcaption {
-  margin-top: 22px;
+.mock-bar b {
+  color: var(--acid);
+  font-weight: 500;
+}
+.mock-body {
+  flex: 1;
+  min-height: 236px;
+  padding: 18px 16px;
+  border: 2px solid var(--ink);
+  border-top: 0;
+  background: var(--paper-hi);
+  box-shadow: 7px 7px 0 var(--ink);
+  font-size: 15px;
+}
+.mock figcaption {
+  margin-top: 26px;
   font-size: 15.5px;
+}
+.ask {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ask picture {
+  flex: none;
+  padding: 4px;
+  background: var(--ink);
+}
+.ask img {
+  display: block;
+  width: 56px;
+  height: 56px;
+}
+.mock .meta {
+  margin: 0;
+  color: var(--muted);
+  font: 500 11.5px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mock .meta b,
+.runs b {
+  color: var(--c);
+  font-weight: 500;
+}
+.mock .q {
+  margin: 3px 0 0;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.mock .rec {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  background: var(--paper-lo);
+  color: var(--ink);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.mock .rec b {
+  display: block;
+  color: var(--muted);
+  font: 500 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.btn {
+  padding: 7px 11px;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font: 600 13px var(--sans);
+}
+.btn.go {
+  background: var(--acid);
+}
+.runs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.runs li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px dashed var(--line-strong);
+}
+.runs li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.runs span {
+  color: var(--ink);
+  font-size: 14.5px;
+  line-height: 1.3;
+}
+.runs b {
+  display: block;
+  font: 500 12px var(--mono);
+}
+.runs em {
+  color: var(--ink);
+  font: 500 12px var(--mono);
+  font-style: normal;
+}
+.runs li:not(.done) em::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  animation: live 1.4s ease-in-out infinite;
+}
+.runs .done {
+  opacity: 0.5;
+}
+@keyframes live {
+  50% {
+    opacity: 0.15;
+  }
+}
+.chat p {
+  max-width: 88%;
+  margin: 0 0 10px;
+  padding: 9px 12px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+.chat .me {
+  width: fit-content;
+  margin-left: auto;
+  background: var(--ink);
+  color: #f4f1e8;
+}
+.chat .pm {
+  border-left: 3px solid var(--claude);
+  background: var(--paper-lo);
+  color: var(--ink);
 }
 
 /* Plain files */
@@ -1101,14 +1069,13 @@ main.wide h2 span {
   top: 58px;
   right: 22px;
   padding: 6px 12px 4px;
-  border: 3px double var(--stamp);
-  color: var(--stamp);
+  border: 3px double var(--ink);
+  color: var(--ink);
   font: 900 30px/1 var(--display);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.88;
+  opacity: 0.82;
   transform: rotate(-9deg);
-  mix-blend-mode: multiply;
 }
 .timeline {
   display: table;
@@ -1131,6 +1098,10 @@ main.wide h2 span {
   font-family: var(--mono);
   color: var(--muted);
   white-space: nowrap;
+}
+.timeline .red td,
+.timeline .red .who {
+  color: var(--stamp);
 }
 .timeline .who {
   font-family: var(--mono);
@@ -1340,29 +1311,38 @@ main.wide h2 span {
   margin: 8px 0 0;
 }
 
-/* The closing band, in acid */
+/* The closing band, in ink, with the mark turning */
 .closing {
-  padding: 120px 0 128px;
+  padding: 112px 0 120px;
   border-top: 2px solid var(--ink);
-  background: var(--acid);
-  color: var(--ink);
+}
+.closing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 256px;
+  gap: 40px 64px;
+  align-items: center;
 }
 main.wide .closing h2 {
   max-width: none;
-  font-size: clamp(56px, 9.4vw, 148px);
-  line-height: 0.86;
+  font-size: clamp(46px, 6.6vw, 104px);
+  line-height: 0.88;
+}
+main.wide .closing h2 .hl {
+  display: inline-block;
+  margin-top: 0.08em;
+  padding: 0.04em 0.14em 0;
+  transform: rotate(-1.2deg);
+  transform-origin: left center;
 }
 .closing p {
   max-width: 560px;
   margin: 28px 0 0;
   font-size: 19px;
 }
-.closing .arrow:hover {
-  background: var(--ink);
-  color: var(--acid);
-}
-.closing .button.dark {
-  box-shadow: 5px 5px 0 rgba(18, 18, 17, 0.3);
+.closing .spin {
+  display: block;
+  width: 256px;
+  height: 256px;
 }
 
 /* Founder page */
@@ -1477,6 +1457,174 @@ main.wide .closing h2 {
   text-transform: uppercase;
 }
 
+/* Hero: the mark in 3D, and the four seats under it */
+.mark {
+  min-width: 0;
+  animation: rise 0.9s var(--ease-rise) 0.3s both;
+}
+.stage {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.stage img,
+.stage canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The still render shows until the 3D mark has drawn its first frame, and stays if it never does. */
+.stage img {
+  object-fit: contain;
+  transition: opacity 0.4s;
+}
+.stage.live img {
+  opacity: 0;
+}
+.seats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 2px solid var(--ink);
+  background: var(--paper-hi);
+}
+.seats li:nth-child(even) {
+  border-left: 2px solid var(--ink);
+}
+.seats li:nth-child(n + 3) {
+  border-top: 2px solid var(--ink);
+}
+.seats button {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 12px 14px 14px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.seats button strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: var(--ink);
+  font: 600 12.5px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.seats button strong::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  background: var(--c);
+}
+.seats button[aria-pressed='true'] {
+  background: var(--ink);
+  color: #cbc8bc;
+}
+.seats button[aria-pressed='true'] strong {
+  color: #f4f1e8;
+}
+
+/* The team: one tile per seat */
+.floor {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 56px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 2px solid var(--ink);
+  background: var(--paper-hi);
+}
+.floor li {
+  padding: 22px 24px 28px;
+}
+.floor li + li {
+  border-left: 2px solid var(--ink);
+}
+.floor img {
+  display: block;
+  width: 116px;
+  height: 116px;
+  margin: 0 0 12px -10px;
+  transition: transform 0.4s var(--ease-rise);
+}
+.floor li:hover img {
+  transform: translateY(-8px) rotate(-5deg);
+}
+.floor .role {
+  margin: 0 0 8px;
+  color: var(--c);
+  font: 500 12px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.floor h3 {
+  font-size: 40px;
+}
+.floor p {
+  margin: 0;
+  font-size: 15.5px;
+}
+.bench {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 26px;
+  margin: 28px 0 0;
+  color: var(--ink);
+  font: 500 13px var(--mono);
+  letter-spacing: 0.04em;
+}
+.bench b {
+  padding: 2px 7px;
+  border: 1.5px solid var(--ink);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.bench span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bench .plain {
+  color: var(--muted);
+  font: 15px var(--sans);
+  letter-spacing: 0;
+}
+
+/* The bill: the receipt next to what it means */
+.bill {
+  overflow: hidden;
+}
+.bill-grid {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 56px 104px;
+  align-items: center;
+}
+.bill .sub + .sub {
+  margin-top: 16px;
+}
+
 /* Sections fade up as they scroll in. site.js turns this on, so a page without it shows all. */
 .reveal-on [data-reveal] {
   opacity: 0;
@@ -1492,7 +1640,8 @@ main.wide .closing h2 {
 
 @media (max-width: 1020px) {
   .hero-grid,
-  .stops,
+  .bill-grid,
+  .closing-grid,
   .file-grid,
   .founder-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1543,7 +1692,6 @@ main.wide .closing h2 {
   }
   .days,
   .parts,
-  .shots,
   .install,
   .faq,
   .hats,
@@ -1592,27 +1740,8 @@ main.wide .closing h2 {
   header.top .button.small {
     display: none;
   }
-  .net .n text,
-  .net .hub text {
-    font-size: 18px;
-  }
-  .stepper button {
-    grid-template-columns: 1fr;
-  }
-  .stepper .num {
-    grid-row: auto;
-  }
   .day {
     padding: 24px 20px;
-  }
-  .shot {
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-  .pin {
-    width: 22px;
-    height: 22px;
-    margin: -11px 0 0 -11px;
-    font: 600 11px/18px var(--mono);
   }
   .road,
   .deal,
@@ -1640,8 +1769,7 @@ main.wide .closing h2 {
     font-size: 22px;
   }
 }
-/* The packets move by SMIL animateMotion, which CSS cannot stop, so they are hidden here and
-   site.js pauses the SVG's animations. */
+/* Moving images swap to their stills through <picture> in the page; hero.js draws one frame. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1649,11 +1777,62 @@ main.wide .closing h2 {
     animation: none !important;
     transition: none !important;
   }
-  .net .packet {
-    display: none !important;
-  }
   .reveal-on [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+}
+@media (max-width: 1020px) {
+  .mark {
+    max-width: 440px;
+  }
+  .stations,
+  .floor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stations li:nth-child(3) {
+    border-left: 0;
+  }
+  .stations li:nth-child(n + 3) {
+    margin-top: 32px;
+  }
+  .floor li:nth-child(3) {
+    border-left: 0;
+  }
+  .floor li:nth-child(n + 3) {
+    border-top: 2px solid var(--ink);
+  }
+  .vignettes {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 520px;
+  }
+  .closing .spin {
+    width: 160px;
+    height: 160px;
+  }
+}
+@media (max-width: 700px) {
+  .stations,
+  .floor,
+  .seats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stations {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .stations li,
+  .stations li + li {
+    margin-top: 28px;
+    padding: 0;
+    border-left: 0;
+  }
+  .floor li + li,
+  .seats li + li {
+    border-top: 2px solid var(--ink);
+    border-left: 0;
+  }
+  .brand img {
+    height: 28px;
   }
 }
