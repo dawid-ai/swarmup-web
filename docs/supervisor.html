@@ -339,7 +339,9 @@ shows another process. Stopping swarmupd cancels a pending read and the wait bet
 never hold swarmupd past the wait of <code>swarmupd stop</code>; the next swarmupd checks the run again. A kill still
 checks the creation time at the moment of the kill.</p>
 <p>The desktop app can host swarmupd: it starts it with its own executable in Node mode
-(<code>ELECTRON_RUN_AS_NODE</code>), and agent runs do not inherit that flag.</p>
+(<code>ELECTRON_RUN_AS_NODE</code>), and agent runs do not inherit that flag. Neither do merge commands
+(checks, install, build), and neither gets the app&#39;s <code>SWARMUP_DAEMON_ENTRY</code>: a check or a run that
+starts swarmupd from a checkout starts that checkout&#39;s build, not the installed app&#39;s.</p>
 <h4 id="process-ledger"><a class="anchor" href="#process-ledger" aria-hidden="true">#</a>Process ledger</h4>
 <p>Each run keeps a ledger of every process it started, in <code>procs/&lt;run&gt;.json</code> in the state folder:
 PID, parent PID, name, command line, creation time, and when swarmupd first and last saw it. A process
