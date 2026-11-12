@@ -13,7 +13,9 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { runInNewContext } from 'node:vm';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createWebGLSurface } from '../assets/hero-surface.js';
 
 const scripts = fileURLToPath(new URL('../scripts/', import.meta.url));
 const dirs: string[] = [];
@@ -283,18 +285,20 @@ describe('website', () => {
     expect(check.code, check.out).toBe(0);
   });
 
-  it('writes the 3D mark with its model and library, and holds still under reduced motion', () => {
+  it('writes the progressive 3D mark with its model, loader and local library', () => {
     const d = repo();
     expect(node('../build.mjs', '--root', d, '--offline').code).toBe(0);
     for (const file of [
       'hero.js',
+      'hero-loader.js',
+      'hero-surface.js',
       'brand/icon.glb',
       'vendor/three/three.module.min.js',
       'vendor/three/addons/loaders/GLTFLoader.js',
     ]) {
       expect(existsSync(join(d, 'dist', 'site', file)), file).toBe(true);
     }
-    expect(page(d, 'hero.js')).toContain('prefers-reduced-motion');
+    expect(page(d, 'hero-loader.js')).toContain('prefers-reduced-motion');
     const css = page(d, 'site.css');
     const reduced = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce)'));
     expect(reduced).toMatch(/animation: none !important/);
@@ -313,7 +317,8 @@ describe('website', () => {
     expect(home).not.toMatch(/<button[^>]*data-tab[^>]*hidden/);
     expect(home).toMatch(/data-hero>\s*<img\s+src="brand\/mark-hero\.webp"/);
     expect(home).toContain('"three": "./vendor/three/three.module.min.js"');
-    expect(home).toContain('<script type="module" src="hero.js">');
+    expect(home).not.toContain('<script type="module" src="hero.js">');
+    expect(home).toContain('<script src="hero-loader.js" defer>');
     // Every brand image the page shows is in the site, and no app screenshot is.
     const images = [...home.matchAll(/\s(?:src|srcset)="(brand\/[^"]+)"/g)].map((m) => m[1]);
     expect(images.length).toBeGreaterThan(20);
@@ -342,5 +347,61 @@ describe('website', () => {
       expect(home).toContain(figure);
       expect(founder).toContain(figure);
     }
+  });
+
+  it('keeps the static hero when the screen is narrow or reduced motion is preferred', () => {
+    const source = readFileSync(
+      fileURLToPath(new URL('../assets/hero-loader.js', import.meta.url)),
+      'utf8',
+    );
+    const runLoader = (wide: boolean, reduced: boolean) => {
+      const frames: Array<() => void> = [];
+      const scripts: Array<{ type?: string; src?: string }> = [];
+      const media = (query: string) => ({
+        matches: query.includes('900px') ? wide : reduced,
+        addEventListener() {},
+      });
+      const window = {
+        matchMedia: media,
+        requestAnimationFrame(callback: () => void) {
+          frames.push(callback);
+        },
+      };
+      const document = {
+        querySelector: () => ({}),
+        createElement: () => ({}),
+        head: { appendChild: (script: { type?: string; src?: string }) => scripts.push(script) },
+      };
+      runInNewContext(source, { document, window });
+      return { frames, scripts };
+    };
+
+    expect(runLoader(false, false)).toMatchObject({ frames: [], scripts: [] });
+    expect(runLoader(true, true)).toMatchObject({ frames: [], scripts: [] });
+
+    const eligible = runLoader(true, false);
+    expect(eligible.scripts).toHaveLength(0);
+    eligible.frames.shift()?.();
+    expect(eligible.scripts).toHaveLength(0);
+    eligible.frames.shift()?.();
+    expect(eligible.scripts).toEqual([{ type: 'module', src: 'hero.js' }]);
+  });
+
+  it('keeps the static hero without logging when WebGL is unavailable', () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const unavailable = {
+      createElement: () => ({ getContext: () => null }),
+    };
+    const blocked = {
+      createElement: () => ({
+        getContext: () => {
+          throw new Error('WebGL blocked');
+        },
+      }),
+    };
+    expect(createWebGLSurface(unavailable as unknown as Document)).toBeNull();
+    expect(createWebGLSurface(blocked as unknown as Document)).toBeNull();
+    expect(logged).not.toHaveBeenCalled();
+    logged.mockRestore();
   });
 });

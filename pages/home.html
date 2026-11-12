@@ -1,6 +1,6 @@
 <!-- Body of the home page; build.mjs wraps it in the site layout. Images under brand/ are the
-     renders of the 3D mark (assets/brand/). hero.js draws the mark in 3D inside [data-hero] and
-     site.js steps its four tabs; without them the still render and all four captions show.
+     renders of the 3D mark (assets/brand/). hero-loader.js progressively loads the 3D mark inside
+     [data-hero], and site.js steps its four tabs; without them the still and captions show.
      The ticker, the receipt, the example task and the app vignettes are invented examples, written
      to be recognized, not measured. The founder section is the exception: its figures come from
      SwarmUp's own queue (`swarmup report --days 30`); update them with the founder page. -->
@@ -926,5 +926,5 @@ tests and the forty old ones. All green.</code></pre>
     }
   }
 </script>
-<script type="module" src="hero.js"></script>
 <script src="site.js" defer></script>
+<script src="hero-loader.js" defer></script>
