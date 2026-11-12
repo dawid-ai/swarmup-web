@@ -91,7 +91,7 @@ extend it by <code>leases.work_minutes</code> (240). After the lease runs out, t
 <code>claimed(stale)</code> or <code>in-progress(stale)</code> and anyone allowed may claim it.</li>
 <li><strong>Dependencies.</strong> A task blocked on other tasks shows as <code>todo(unblocked)</code> once all of them are
 done or parked. The next claim records an <code>unblock</code> event first. On a machine where swarmupd
-merges the dependency&#39;s root (<code>opsd.merge.&lt;root name&gt;</code>), a dependency that a review approved,
+merges the dependency&#39;s root (<code>swarmupd.merge.&lt;root name&gt;</code>), a dependency that a review approved,
 and whose review request names a branch, counts only after swarmupd writes one of two events to
 it as <code>opsd:merge</code>: the <code>merge</code> event, or a comment with <code>no_merge</code> that says it has nothing to
 merge. Until then the task stays <code>blocked</code>, and <code>swarmup show</code> lists the dependency under
@@ -159,7 +159,7 @@ merged after a new review or someone runs <code>swarmup unblock</code>.</li>
 </tr>
 <tr>
 <td><code>ask ID QUESTION [--to ID | --human]</code></td>
-<td><code>blocked</code>. Without <code>--to</code>, an agent&#39;s question waits for the PM (the <code>opsd.chat.agent</code> when it is a PM, else the first PM); the PM&#39;s own, the orchestrator&#39;s, one with <code>--human</code>, or any when no PM is configured waits for the human. The addressee of an open ask may forward it with its own <code>ask</code>; the answer still goes to the agent that asked first.</td>
+<td><code>blocked</code>. Without <code>--to</code>, an agent&#39;s question waits for the PM (the <code>swarmupd.chat.agent</code> when it is a PM, else the first PM); the PM&#39;s own, the orchestrator&#39;s, one with <code>--human</code>, or any when no PM is configured waits for the human. The addressee of an open ask may forward it with its own <code>ask</code>; the answer still goes to the agent that asked first.</td>
 </tr>
 <tr>
 <td><code>block ID MSG [--on IDS] [--to ID]</code></td>
@@ -380,7 +380,7 @@ needs no other state, and every clone reads the same history.</li>
 another. Every other command takes <code>NAME</code> or <code>ROOT/NAME</code>, and needs <code>ROOT/NAME</code> when two roots
 have a repeat of that name. An edit changes the repeat in the root it lives in. <code>swarmup repeat list</code> and the desktop cards show such a repeat as <code>ROOT/NAME</code>, the form the commands take.</li>
 <li><strong>More than one PC.</strong> Two PCs that both run swarmupd on one task store can fire the same slot
-before they sync. Set <code>opsd.repeats: false</code> on all but one of them. A project root and its
+before they sync. Set <code>swarmupd.repeats: false</code> on all but one of them. A project root and its
 Master Repo copy count as one store here.</li>
 </ul>
 <p>Conditions left for later: a label or status that appears, an inbox or channel event, and time
@@ -528,9 +528,9 @@ to 4000 characters) as <code>detail</code> when it says more.</p>
 <p>Every task that can run has an owner (AO-0140):</p>
 <ul>
 <li><code>swarmup new</code> and <code>swarmup assign</code> take a person, a configured agent, or a group (<code>*:engineer</code>,
-<code>claude:*</code>) that a waking agent (<code>opsd.agents.&lt;id&gt;.wake: true</code>, role file active) answers to.
+<code>claude:*</code>) that a waking agent (<code>swarmupd.agents.&lt;id&gt;.wake: true</code>, role file active) answers to.
 For a role group, that agent&#39;s provider must be one swarmupd starts the role&#39;s group work on:
-listed in <code>opsd.roles.&lt;role&gt;.providers</code> (default: every runtime), and the first one when
+listed in <code>swarmupd.roles.&lt;role&gt;.providers</code> (default: every runtime), and the first one when
 <code>overflow</code> is false. When no agent wakes, a group needs a configured agent instead. Anything else exits 1 and lists
 the role groups, the configured agents and the person; <code>--force</code> passes it with a warning.</li>
 <li>Each tick, before it wakes agents, swarmupd gives an owner to open <code>todo</code> or <code>blocked</code> work, or to a

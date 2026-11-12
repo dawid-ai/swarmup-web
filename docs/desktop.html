@@ -93,7 +93,7 @@ a run releases its claim. To let runs finish instead, cancel, pause new runs and
 are live.</li>
 <li><strong>Pause new runs</strong> and <strong>Resume new runs</strong>. While paused, no wake, schedule, <strong>Run now</strong> or
 <code>swarmup launch</code> starts a run; helper runs of live runs still start, live runs finish, and sync,
-notifications and the API keep working. The pause is <code>opsd.paused: true</code> in the user config, so
+notifications and the API keep working. The pause is <code>swarmupd.paused: true</code> in the user config, so
 it lasts across restarts until you resume. From a terminal: <code>swarmup daemon pause</code> and
 <code>swarmup daemon resume</code>.</li>
 <li><strong>Start swarmupd</strong>: <strong>When I open the app</strong> (the default) or <strong>When I sign in to Windows</strong>. Sign-in

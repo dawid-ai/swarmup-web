@@ -91,7 +91,7 @@ older than the app installed now. After <code>swarmupd</code> merges a change to
 tells you once, in <code>#general</code> with a mention, that the running <code>swarmupd</code> does not have it yet: restart
 it when it runs from the checkout it just built, build that checkout first when the build did not
 run, or install a new build of the app when it runs the installed app.</p>
-<p>A pause is <code>opsd.paused: true</code> in the user config, so it holds across restarts, and a stopped
+<p>A pause is <code>swarmupd.paused: true</code> in the user config, so it holds across restarts, and a stopped
 <code>swarmupd</code> starts paused. While paused, <code>swarmupd</code> refuses every new run (wakes, schedules,
 <code>swarmup launch</code>, <strong>Run now</strong>) with the reason in <code>swarmup waits</code>; helper runs of live runs still start.
 Sync, notifications, presence and the API keep working.</p>
@@ -188,7 +188,7 @@ input, cache writes and output; cache reads are left out.</p>
 </tr>
 </tbody></table>
 <ul>
-<li><p>The providers come from the user config only, once it is seeded (<code>opsd.seeded</code>). <code>swarmup setup</code>,
+<li><p>The providers come from the user config only, once it is seeded (<code>swarmupd.seeded</code>). <code>swarmup setup</code>,
 the desktop&#39;s first start and swarmupd&#39;s start write the defaults (<code>claude</code>, <code>codex</code>) once; a
 machine with no config file also gets the default agents (<code>engineer</code>, <code>qa</code>, <code>reviewer</code> and <code>pm</code>
 for each default provider found on PATH). A config from before seeding gets the defaults
@@ -250,7 +250,7 @@ that writes, whose folder would be a data root&#39;s checkout, starts in the tas
 <code>cwd</code>, a helper, a review, a question or a chat turn. A worktree that is there is reused as it
 is, so a task&#39;s later runs go on with its branch. A missing one is made on branch
 <code>&lt;runtime&gt;/&lt;id&gt;</code> (lowercase), from that branch when it exists, else from the root&#39;s
-<code>opsd.merge</code> base, else from the checkout&#39;s <code>HEAD</code>. Wake makes it off the event loop and starts
+<code>swarmupd.merge</code> base, else from the checkout&#39;s <code>HEAD</code>. Wake makes it off the event loop and starts
 the run at a later tick (<code>swarmup waits</code> says <code>starts once swarmupd has made its worktree &lt;path&gt;</code>); a
 launch from the API or a schedule makes it before it starts. When git cannot make it, or
 something that is not a worktree is at that path, the run starts in the checkout as before,
@@ -259,12 +259,12 @@ a warning for each failure. The prompt names the worktree and its branch and tel
 commit there and leave the store checkout&#39;s branch alone. The worktree holds a copy of the task
 store as of its branch, so a run whose folder holds such a copy gets <code>SWARMUP_ROOTS_ONLY=1</code>: its
 <code>swarmup</code> uses only <code>SWARMUP_ROOTS</code>, the copied root first, never the stale copy. To keep such runs in
-the store checkout, one writer at a time, set <code>opsd.task_worktrees: false</code>.</p>
+the store checkout, one writer at a time, set <code>swarmupd.task_worktrees: false</code>.</p>
 </li>
 <li><p><strong>Code in a checkout of its own (AO-0252).</strong> A task store can be a repo of its own, so the code
 repo can be public while tasks and chats stay private. Name the code checkout per root in the
 user config:</p>
-<pre><code class="language-yaml">opsd:
+<pre><code class="language-yaml">swarmupd:
   code:
     agent-ops: C:\dev\swarmup # the root&#39;s name: the code checkout
   merge:
@@ -279,12 +279,12 @@ swarmupd merges into, with the same rule as a store checkout: keep its base chec
 make code branches in a worktree. Because no store sync pushes that repo, swarmupd pushes the
 merged commit to its base on the remote after each merge, after the same secret check task
 branches get. It never forces the push, and a refused push is a warning in the swarmupd log.
-<code>opsd.push_branches.&lt;root&gt;: false</code> turns that push off too. Without an entry, the code is the
+<code>swarmupd.push_branches.&lt;root&gt;: false</code> turns that push off too. Without an entry, the code is the
 repo the store is in, as before.</p>
 </li>
 <li><p><strong>Reclaiming task worktrees (AO-0230).</strong> Every 10 minutes, and at swarmupd&#39;s first tick,
 swarmupd removes the worktree <code>out/wt-&lt;ID&gt;</code> of each task that has been <code>done</code> or <code>parked</code> for
-<code>opsd.reclaim_after_minutes</code> (60). It removes a worktree only when no run works in it, no merge
+<code>swarmupd.reclaim_after_minutes</code> (60). It removes a worktree only when no run works in it, no merge
 of the task waits, <code>git status</code> shows no change, and its commit is on a branch. A merge waits
 from the approval until swarmupd records the merge or notes that it has nothing to merge; a
 note that the merge failed does not end the wait, so that worktree stays. The branch stays. swarmupd notes on the task (as <code>opsd:worktree</code>) which branch and commit hold the work,
@@ -294,7 +294,7 @@ with one warning per reason in the swarmupd log. swarmupd deletes the folder wit
 Windows follows a junction in the folder, such as a <code>node_modules</code> entry linked to the main
 checkout, and deletes what the junction points to. A removal is saved before the folder is
 touched, so the next sweep finishes one that a crash or a locked file cut off. Set
-<code>opsd.reclaim_worktrees: false</code> to keep every worktree.</p>
+<code>swarmupd.reclaim_worktrees: false</code> to keep every worktree.</p>
 </li>
 <li><p><strong>Crash recovery in task worktrees (AO-0230).</strong> swarmupd makes a task worktree locked with the
 reason <code>swarmupd: making</code> and unlocks it once git has checked out every file. A worktree that
@@ -309,7 +309,7 @@ until it is gone.</p>
 <code>SWARMUP_SCRATCH</code> and in <code>TEMP</code>, <code>TMP</code> and <code>TMPDIR</code>. It is an extra writable folder for Claude
 (<code>--add-dir</code>) and Codex. The prompt of a run that writes tells it to put logs, test output,
 experiments and downloads there, and never in the repo, its <code>out/</code> folder or the folder that
-holds the repo. swarmupd removes a scratch folder <code>opsd.scratch_days</code> (7) days after its run
+holds the repo. swarmupd removes a scratch folder <code>swarmupd.scratch_days</code> (7) days after its run
 ends. For a writing run, swarmupd lists the folder that holds the store checkout (unless that is
 a home, temp or drive-root folder), plus the store checkout and its <code>out/</code> for a run in a task
 worktree. It lists them when the run starts and again when it ends. The <code>run-end</code> event names
@@ -464,13 +464,13 @@ wake and schedules wait for room.</p>
 <code>codex:engineer</code> count as one role. One task never has two live runs.</li>
 <li><strong>One writing run per checkout.</strong> A run of a role that writes never starts in a checkout where
 another run of a role that writes is live or planned, whatever project either task names. A
-run&#39;s folder is the launch&#39;s <code>cwd</code>, else <code>opsd.agents.&lt;id&gt;.cwd</code>, else the top of the git repo
+run&#39;s folder is the launch&#39;s <code>cwd</code>, else <code>swarmupd.agents.&lt;id&gt;.cwd</code>, else the top of the git repo
 of its task&#39;s root, so tasks in one root share a checkout. Its checkout is the top of that
 folder&#39;s git work tree, so two runs in different subfolders of one checkout count as one; each
 linked <code>git worktree</code> is its own checkout, and a folder outside git is its own. A run on a code
 task works in the task&#39;s worktree (see Task worktrees under Runtimes), so code tasks of one
 root run side by side, within the role&#39;s <code>per_project</code> limit. Other writing runs in one root,
-and code tasks with <code>opsd.task_worktrees: false</code>, run at once only when their projects live in
+and code tasks with <code>swarmupd.task_worktrees: false</code>, run at once only when their projects live in
 different roots or their agents have their own checkout. Helpers work under their parent and are not counted, and
 neither are question runs or chat turns: a chat turn has <code>Edit</code> and <code>Write</code> denied, so it
 neither holds a checkout nor waits for one, whatever its role.</li>
@@ -637,9 +637,12 @@ and the <strong>Agents</strong> view shows the plan and each provider&#39;s usag
 </ul>
 <h2 id="config"><a class="anchor" href="#config" aria-hidden="true">#</a>Config</h2>
 <p>The <code>swarmupd</code> section of the user config (<code>%APPDATA%\swarmup\config.yml</code>,
-<code>~/.config/swarmup/config.yml</code> or <code>SWARMUP_CONFIG</code>):</p>
+<code>~/.config/swarmup/config.yml</code> or <code>SWARMUP_CONFIG</code>). A config from an earlier version names
+the section by its earlier key; swarmupd reads and edits that section as it is while the file has
+no <code>swarmupd</code> key. To move to the new name, rename the key in the file. When a file has both,
+swarmupd uses <code>swarmupd</code> alone.</p>
 <pre><code class="language-yaml">me: human:dawid
-opsd:
+swarmupd:
   port: 4747 # 0 picks a free port
   tick_seconds: 15
   proc_seconds: 5 # how often the processes of live runs are looked at
@@ -701,7 +704,7 @@ reload it: roots, limits, agents and schedules apply from the next tick; <code>p
 happen at sync times, not every tick.</li>
 </ul>
 <h2 id="chat"><a class="anchor" href="#chat" aria-hidden="true">#</a>Chat</h2>
-<p>The desktop <strong>Chat</strong> view is one conversation with the PM (<code>opsd.chat.agent</code>, default <code>claude:pm</code>,
+<p>The desktop <strong>Chat</strong> view is one conversation with the PM (<code>swarmupd.chat.agent</code>, default <code>claude:pm</code>,
 which every new config seeds).</p>
 <ul>
 <li><strong>Each message is a run.</strong> swarmupd starts a run of the chat agent with no task, under every limit
@@ -714,7 +717,7 @@ which reads them all.</li>
 <code>--resume</code>, so the context carries from message to message. The first turn&#39;s prompt holds the
 role file and the chat rules; later turns get a short reminder. A turn that fails without a
 reply drops the session, and the next message starts a new one. The chat runs on Claude only:
-only Claude runs get a session to resume and a streamed reply, so <code>opsd.chat.agent</code> refuses an
+only Claude runs get a session to resume and a streamed reply, so <code>swarmupd.chat.agent</code> refuses an
 agent on any other runtime.</li>
 <li><strong>What it may do.</strong> A chat turn&#39;s tools are the role file&#39;s <code>tools</code>, else <code>Read</code>, <code>Grep</code>,
 <code>Glob</code>, <code>git log</code> and <code>git show</code>, plus <code>swarmup</code>. <code>Edit</code>, <code>Write</code>, <code>swarmup verdict</code> and <code>swarmup decide</code>
@@ -725,7 +728,7 @@ an answer for the human, or claiming and working a task.</li>
 sends the reply so far as a <code>chat</code> event. When the turn ends, the reply is saved with what the
 agent did in SwarmUp during the turn (task events, new tasks and channel posts by the agent
 between the run&#39;s start and end), shown as links.</li>
-<li><strong>Mentions.</strong> With <code>opsd.chat.mentions</code> (default <code>true</code>), each tick reads channel posts that
+<li><strong>Mentions.</strong> With <code>swarmupd.chat.mentions</code> (default <code>true</code>), each tick reads channel posts that
 mention the chat agent (<code>@claude:pm</code> or <code>@*:pm</code>) and adds them to the chat.
 The turn answers in the channel with <code>swarmup channel post</code> and sums up in the chat. Those mentions
 never wake an inbox run of the chat agent. The first time, swarmupd reads mentions of the last 24
@@ -736,17 +739,17 @@ it ends the chat agent&#39;s other live run that queued messages wait for.</li>
 conversation stays in <code>chat-&lt;id&gt;.json</code> in the state folder.</li>
 </ul>
 <p>The conversation lives in <code>chat.json</code> in the state folder, on this machine only.</p>
-<pre><code class="language-yaml">opsd:
+<pre><code class="language-yaml">swarmupd:
   chat:
     agent: claude:pm # one Claude agent, no wildcard
     mentions: true # channel posts that mention it join the chat
     budget: 20m # one turn; default: the agent&#39;s budget
 </code></pre>
 <h2 id="merging-approved-work"><a class="anchor" href="#merging-approved-work" aria-hidden="true">#</a>Merging approved work</h2>
-<p>With <code>opsd.merge.&lt;root name&gt;</code> set, swarmupd merges a task&#39;s work into a base branch once a review
+<p>With <code>swarmupd.merge.&lt;root name&gt;</code> set, swarmupd merges a task&#39;s work into a base branch once a review
 approves it. The setting lives in the user config, not in the task store&#39;s <code>config.yml</code>, so the
 commands swarmupd runs are set on each machine and never arrive through a sync.</p>
-<pre><code class="language-yaml">opsd:
+<pre><code class="language-yaml">swarmupd:
   merge:
     v2: # the root&#39;s name
       base: v2 # the branch approved work goes into
@@ -876,7 +879,7 @@ shutdown.</li>
 each sync that pushes a root (the scheduled push under the root&#39;s sync policy, and the sync after
 every run), swarmupd pushes the task branches of the root&#39;s repo to its remote. It is on for every
 root; to turn it off for one, set it to <code>false</code> in the user config:</p>
-<pre><code class="language-yaml">opsd:
+<pre><code class="language-yaml">swarmupd:
   push_branches:
     v2: false # the root&#39;s name
 </code></pre>
@@ -885,7 +888,7 @@ root; to turn it off for one, set it to <code>false</code> in the user config:</
 <code>codex/*</code>, which includes the branches swarmupd commits run leftovers to (<code>&lt;runtime&gt;/&lt;task&gt;-&lt;run&gt;</code>).
 A branch is pushed when it has commits whose changes neither the bases nor its remote branch
 have: the branch checked out in the root&#39;s checkout (<code>v2</code> for the engine), the root&#39;s
-<code>opsd.merge</code> base, and the remote&#39;s default branch. A branch merged by hand with a rebase or a
+<code>swarmupd.merge</code> base, and the remote&#39;s default branch. A branch merged by hand with a rebase or a
 cherry-pick has nothing new and is not pushed. A merge commit counts as new when its result
 differs from every parent somewhere, such as a conflict resolution; a clean merge of a base
 does not.</li>
@@ -924,11 +927,11 @@ rewrites the file only when something changed or the record is 20 minutes old, s
 without a commit every tick. A machine counts as alive when it wrote in the last 70 minutes.
 <code>GET /api/machines</code> lists every machine seen; <strong>Agents</strong> shows them.</p>
 <h2 id="notifications"><a class="anchor" href="#notifications" aria-hidden="true">#</a>Notifications</h2>
-<p>Set <code>opsd.notify.webhook</code> (a Discord or Slack incoming webhook, https; http only to this machine)
+<p>Set <code>swarmupd.notify.webhook</code> (a Discord or Slack incoming webhook, https; http only to this machine)
 in <strong>Settings</strong> or the user config, never in a data root. Each tick, swarmupd posts new inbox items for
 <code>me</code> (asks, reviews, findings to triage, decisions, mentions, messages) and runs that failed (non-zero exit, lost,
 over budget) as one message, at most 6 messages per 10 minutes; items already waiting when
-notifications start are not sent. <code>opsd.notify.kinds</code> limits what is sent. The URL is a secret:
+notifications start are not sent. <code>swarmupd.notify.kinds</code> limits what is sent. The URL is a secret:
 settings never return it, and warnings say only the HTTP status.</p>
 <h2 id="api"><a class="anchor" href="#api" aria-hidden="true">#</a>API</h2>
 <p>swarmupd listens on <code>127.0.0.1</code> only. Every request needs the token from <code>opsd.json</code> as
