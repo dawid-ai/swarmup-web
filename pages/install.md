@@ -91,8 +91,16 @@ With Claude Code instead of Codex, use `claude:engineer` in both commands. `swar
 task id; use it in `--task` if it is not `T-0001`. If `swarmup launch` reports that swarmupd is
 paused, run `swarmup daemon resume` and launch again. In the first minute after the orchestrator
 starts, a Codex launch can report that swarmupd repairs what Codex sessions left: wait a minute
-and launch again. Watch the run in the app's **Runs** view, or
-with `swarmup runs` and `swarmup logs RUN`.
+and launch again. Watch the run in the app's **Runs** view, or in a terminal:
+
+```sh
+swarmup runs --all
+swarmup logs 6SWS01PR
+```
+
+`swarmup runs` lists only live runs; `--all` also lists the ones that ended. Replace `6SWS01PR`
+with the id in the first column of your `swarmup runs --all` output; `swarmup launch` also prints
+the full id.
 
 The agent finishes with a review request, and the orchestrator commits its work on a branch of its
 own. `swarmup show T-0001` shows who the review went to. With both Claude Code and Codex set up,
