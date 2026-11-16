@@ -42,20 +42,18 @@ Tasks live in a git repository of their own. Open a new terminal, so it picks up
 mkdir my-tasks
 cd my-tasks
 git init
-swarmup init --name my-tasks --human human:you --with-agents
+swarmup init --name my-tasks --human human:you
 ```
 
-`--with-agents` adds the starter agent roles, such as `codex:backend`, `claude:writer` and
-`claude:researcher`. `swarmup agents` lists them with their status: an `active` role can work
-now, and a `proposed` one waits until you set `status: active` in its file under
-`.swarmup/agents/`. To share the queue with another machine, add a git
-remote; `swarmup sync` commits and pushes it.
+`swarmup init` creates a `.swarmup` folder that holds tasks, agents and notes. To share the queue
+with another machine, add a git remote; `swarmup sync` commits and pushes it.
 
 ## 3. Start the app
 
 Start **SwarmUp** from the Start menu. On the first start it asks for your id (such as
-`human:you`) and the folder that holds your tasks: pick `my-tasks`. Then it starts the orchestrator
-and shows your inbox.
+`human:you`) and the folder that holds your tasks: pick `my-tasks`. Then it adds an engineer, a
+QA, a reviewer and a PM agent for each coding agent it finds, such as `codex:engineer` and
+`claude:engineer`, starts the orchestrator and shows your inbox.
 
 Check the machine from a terminal:
 
@@ -77,23 +75,30 @@ swarmup daemon start
 swarmup doctor
 ```
 
-`--root` takes the path of any task folder, so you can run `swarmup setup` from anywhere with the
-full path instead of `.`.
+`swarmup setup` adds the same agents as the app and prints their names. `--root` takes the path of
+any task folder, so you can run `swarmup setup` from anywhere with the full path instead of `.`.
 
 ## 4. Give an agent its first task
 
 Create a task and start a run:
 
 ```sh
-swarmup new "Add a README to this folder" --to codex:backend --as human:you
-swarmup launch codex:backend --task T-0001 --budget 30m
+swarmup new "Add a README to this folder" --to codex:engineer --as human:you
+swarmup launch codex:engineer --task T-0001 --budget 30m
 ```
 
-With Claude Code instead of Codex, use `claude:writer` in both commands. `swarmup new` prints the
+With Claude Code instead of Codex, use `claude:engineer` in both commands. `swarmup new` prints the
 task id; use it in `--task` if it is not `T-0001`. If `swarmup launch` reports that swarmupd is
-paused, run `swarmup daemon resume` and launch again. Watch the run in the app's **Runs** view, or
-with `swarmup runs` and `swarmup logs RUN`. The agent finishes with a review, which lands in your
-inbox: read the result, then approve it or ask for changes.
+paused, run `swarmup daemon resume` and launch again. In the first minute after the orchestrator
+starts, a Codex launch can report that swarmupd repairs what Codex sessions left: wait a minute
+and launch again. Watch the run in the app's **Runs** view, or
+with `swarmup runs` and `swarmup logs RUN`.
+
+The agent finishes with a review request, and the orchestrator commits its work on a branch of its
+own. `swarmup show T-0001` shows who the review went to. With both Claude Code and Codex set up,
+it goes to the other provider's reviewer, such as `claude:reviewer`, which you start the same way
+with `swarmup launch`. A review sent to you lands in your inbox: read the result, then approve it
+or ask for changes.
 
 To have the orchestrator start agents on its own when work arrives, turn on **wake** for them in
 the app's **Settings**, or set `wake: true` in the user config (see
@@ -124,9 +129,11 @@ checkout.
 - **`Author identity unknown`**, or `swarmup doctor` fails **Git identity**: git has no name and
   email on this machine, so neither `swarmup sync` nor agents can commit. Run the two
   `git config --global` commands from [What you need](#what-you-need).
-- **`... is proposed in its role file`** when you launch: that role is a draft. Pick an
-  `active` role from `swarmup agents`, or set `status: active` in its file under
-  `.swarmup/agents/`.
+- **`owner ... is not a configured agent`** from `swarmup new`: no agent has that name on this
+  machine. The message lists the ones you have, such as `codex:engineer`; pick one of them.
+- **`... is proposed in its role file`** when you launch: someone added a role file under
+  `.swarmup/agents/` that is still a draft. `swarmup agents` lists role files with their status.
+  Set `status: active` in the file, or launch another agent.
 - **`'claude' is not on PATH`** (or `codex`) in `swarmup doctor` or a launch: the agent CLI is not
   installed, or this terminal cannot find it. Install it, open a new terminal and check that
   `claude --version` or `codex --version` works. If it lives elsewhere, set its full path as
