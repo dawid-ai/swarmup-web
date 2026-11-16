@@ -304,50 +304,57 @@ describe('website', () => {
     expect(reduced).toMatch(/animation: none !important/);
   });
 
-  it('builds the real home page: the 3D mark, four seats and the brand images', () => {
-    const real =
-      process.env.SWARMUP_TOOL ?? fileURLToPath(new URL('../../swarmup/', import.meta.url));
-    const out = mkdtempSync(join(tmpdir(), 'ops-site-real-'));
-    dirs.push(out);
-    const r = node('../build.mjs', '--root', real, '--out', out, '--offline');
-    expect(r.code, r.out).toBe(0);
-    const home = readFileSync(join(out, 'index.html'), 'utf8');
-    // Without JavaScript the still render shows, with all four seats as text under it.
-    expect(home.match(/data-tab\b/g)).toHaveLength(4);
-    expect(home).not.toMatch(/<button[^>]*data-tab[^>]*hidden/);
-    expect(home).toMatch(/data-hero>\s*<img\s+src="brand\/mark-hero\.webp"/);
-    expect(home).toContain('"three": "./vendor/three/three.module.min.js"');
-    expect(home).not.toContain('<script type="module" src="hero.js">');
-    expect(home).toContain('<script src="hero-loader.js" defer>');
-    // Every brand image the page shows is in the site, and no app screenshot is.
-    const images = [...home.matchAll(/\s(?:src|srcset)="(brand\/[^"]+)"/g)].map((m) => m[1]);
-    expect(images.length).toBeGreaterThan(20);
-    for (const image of images) expect(existsSync(join(out, image)), image).toBe(true);
-    expect(home).not.toContain('media/');
-    // No page names the product's former brand, and no internal document is built.
-    const built = (dir: string): string[] =>
-      readdirSync(join(out, dir), { withFileTypes: true }).flatMap((e) =>
-        e.isDirectory()
-          ? built(join(dir, e.name))
-          : e.name.endsWith('.html')
-            ? [join(dir, e.name)]
-            : [],
-      );
-    for (const file of built('.')) {
-      expect(readFileSync(join(out, file), 'utf8'), file).not.toMatch(/agent ?ops/i);
-    }
-    for (const internal of ['proposals', 'launch', 'research']) {
-      expect(existsSync(join(out, 'docs', internal))).toBe(false);
-    }
-    expect(existsSync(join(out, 'docs', 'swarmup-rename.html'))).toBe(false);
-    // The founder section of the home page and the founder page quote the same 30 days. They are
-    // the only measured figures; the receipt and the ticker are examples.
-    const founder = readFileSync(join(out, 'founder.html'), 'utf8');
-    for (const figure of ['1,977', '229.8']) {
-      expect(home).toContain(figure);
-      expect(founder).toContain(figure);
-    }
-  });
+  // The tool checkout comes from SWARMUP_TOOL (set in CI) or a sibling ../swarmup. A
+  // worktree or merge folder has no sibling, so skip there instead of failing; a wrong
+  // SWARMUP_TOOL still fails.
+  const real =
+    process.env.SWARMUP_TOOL ?? fileURLToPath(new URL('../../swarmup/', import.meta.url));
+  const noTool = !process.env.SWARMUP_TOOL && !existsSync(join(real, 'package.json'));
+  it.skipIf(noTool)(
+    'builds the real home page: the 3D mark, four seats and the brand images',
+    () => {
+      const out = mkdtempSync(join(tmpdir(), 'ops-site-real-'));
+      dirs.push(out);
+      const r = node('../build.mjs', '--root', real, '--out', out, '--offline');
+      expect(r.code, r.out).toBe(0);
+      const home = readFileSync(join(out, 'index.html'), 'utf8');
+      // Without JavaScript the still render shows, with all four seats as text under it.
+      expect(home.match(/data-tab\b/g)).toHaveLength(4);
+      expect(home).not.toMatch(/<button[^>]*data-tab[^>]*hidden/);
+      expect(home).toMatch(/data-hero>\s*<img\s+src="brand\/mark-hero\.webp"/);
+      expect(home).toContain('"three": "./vendor/three/three.module.min.js"');
+      expect(home).not.toContain('<script type="module" src="hero.js">');
+      expect(home).toContain('<script src="hero-loader.js" defer>');
+      // Every brand image the page shows is in the site, and no app screenshot is.
+      const images = [...home.matchAll(/\s(?:src|srcset)="(brand\/[^"]+)"/g)].map((m) => m[1]);
+      expect(images.length).toBeGreaterThan(20);
+      for (const image of images) expect(existsSync(join(out, image)), image).toBe(true);
+      expect(home).not.toContain('media/');
+      // No page names the product's former brand, and no internal document is built.
+      const built = (dir: string): string[] =>
+        readdirSync(join(out, dir), { withFileTypes: true }).flatMap((e) =>
+          e.isDirectory()
+            ? built(join(dir, e.name))
+            : e.name.endsWith('.html')
+              ? [join(dir, e.name)]
+              : [],
+        );
+      for (const file of built('.')) {
+        expect(readFileSync(join(out, file), 'utf8'), file).not.toMatch(/agent ?ops/i);
+      }
+      for (const internal of ['proposals', 'launch', 'research']) {
+        expect(existsSync(join(out, 'docs', internal))).toBe(false);
+      }
+      expect(existsSync(join(out, 'docs', 'swarmup-rename.html'))).toBe(false);
+      // The founder section of the home page and the founder page quote the same 30 days. They are
+      // the only measured figures; the receipt and the ticker are examples.
+      const founder = readFileSync(join(out, 'founder.html'), 'utf8');
+      for (const figure of ['1,977', '229.8']) {
+        expect(home).toContain(figure);
+        expect(founder).toContain(figure);
+      }
+    },
+  );
 
   it('keeps the static hero when the screen is narrow or reduced motion is preferred', () => {
     const source = readFileSync(
