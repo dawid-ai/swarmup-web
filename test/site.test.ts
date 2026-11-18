@@ -81,6 +81,22 @@ const RELEASES = [
   },
 ];
 
+// The tool checkout sits next to this repo's main checkout. In a swarmupd worktree
+// (out/wt-*), ../../swarmup/ is out/swarmup, so fall back to the sibling of the main
+// checkout, found through git's common directory. SWARMUP_TOOL overrides both.
+function toolCheckout() {
+  if (process.env.SWARMUP_TOOL) return process.env.SWARMUP_TOOL;
+  const sibling = fileURLToPath(new URL('../../swarmup/', import.meta.url));
+  if (existsSync(join(sibling, 'package.json'))) return sibling;
+  const git = spawnSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], {
+    cwd: fileURLToPath(new URL('..', import.meta.url)),
+    encoding: 'utf8',
+    windowsHide: true,
+  });
+  if (git.status !== 0) return sibling;
+  return join(dirname(dirname(git.stdout.trim())), 'swarmup');
+}
+
 const page = (d: string, p: string) => readFileSync(join(d, 'dist', 'site', p), 'utf8');
 
 // Each build test spawns build.mjs, which takes 1-2 s on an idle machine but more than
@@ -306,11 +322,10 @@ describe('website', { timeout: 60_000 }, () => {
     expect(reduced).toMatch(/animation: none !important/);
   });
 
-  // The tool checkout comes from SWARMUP_TOOL (set in CI) or a sibling ../swarmup. A
-  // worktree or merge folder has no sibling, so skip there instead of failing; a wrong
-  // SWARMUP_TOOL still fails.
-  const real =
-    process.env.SWARMUP_TOOL ?? fileURLToPath(new URL('../../swarmup/', import.meta.url));
+  // toolCheckout() takes SWARMUP_TOOL (set in CI), a sibling ../swarmup or, in a worktree,
+  // the sibling of the main checkout. Skip when none of them is a checkout instead of
+  // failing; a wrong SWARMUP_TOOL still fails.
+  const real = toolCheckout();
   const noTool = !process.env.SWARMUP_TOOL && !existsSync(join(real, 'package.json'));
   it.skipIf(noTool)(
     'builds the real home page: the 3D mark, four seats and the brand images',
