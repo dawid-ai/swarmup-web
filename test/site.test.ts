@@ -83,7 +83,9 @@ const RELEASES = [
 
 const page = (d: string, p: string) => readFileSync(join(d, 'dist', 'site', p), 'utf8');
 
-describe('website', () => {
+// Each build test spawns build.mjs, which takes 1-2 s on an idle machine but more than
+// the 5 s vitest default under load; 60 s keeps the merge gate from refusing on load alone.
+describe('website', { timeout: 60_000 }, () => {
   it('builds every page, names the newest release with an installer, and passes the link check', () => {
     const d = repo();
     const fixture = join(d, 'releases.json');
