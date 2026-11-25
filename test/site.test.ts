@@ -342,7 +342,8 @@ describe('website', { timeout: 60_000 }, () => {
       expect(home).toContain('"three": "./vendor/three/three.module.min.js"');
       expect(home).not.toContain('<script type="module" src="hero.js">');
       expect(home).toContain('<script src="hero-loader.js" defer>');
-      // Every brand image the page shows is in the site, and no app screenshot is.
+      // Every brand image the page shows is in the site, and nothing links the docs' media/:
+      // the loop's screenshots are the site's own copies under shots/.
       const images = [...home.matchAll(/\s(?:src|srcset)="(brand\/[^"]+)"/g)].map((m) => m[1]);
       expect(images.length).toBeGreaterThan(20);
       for (const image of images) expect(existsSync(join(out, image)), image).toBe(true);
