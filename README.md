@@ -15,6 +15,7 @@ live without an app release.
 | `assets/site.js`              | Presses the hero's four seats in turn, and fades sections in.                    |
 | `assets/hero.js`              | Draws the mark in 3D in the home page hero, from `brand/icon.glb`.               |
 | `assets/brand/`               | Renders of the 3D brand kit: lockups, tiles, illustrations, status loops.        |
+| `assets/shots/`               | Screenshots of the app for the home page's loop section, from the tool's media.  |
 | `assets/vendor/`              | three.js 0.165 (MIT), which `hero.js` loads from the site itself.                |
 | `assets/logo.svg`             | The flat mark: the source of the tiles, and the header on a site without brand/. |
 | `assets/favicon.svg`          | The browser tab icon; `favicon.ico` is its fallback.                             |
@@ -51,6 +52,12 @@ iOS paints transparency black. The rules that matter on a page:
 The ticker, the receipt, the example task and the app vignettes on the home page are invented
 examples, written to be recognized. They are not measurements and they name no real project. The
 receipt says so in its last line.
+
+The screenshots in `assets/shots/` show the real app on a demo shop with invented tasks. They are
+the tool's `docs/media/` screenshots (rendered by `node scripts/readme-media.mjs` there), scaled
+to 1200 px wide as WebP; the loop section says the tasks and numbers are invented. To refresh
+them, render the tool's media again and convert, for example
+`ffmpeg -i workflows.png -vf scale=1200:-1 -c:v libwebp -quality 85 workflows.webp`.
 
 The founder section of the home page and the founder page are the exception: their figures come
 from SwarmUp's own queue (`swarmup report --days 30`). They are typed into the pages, not read at

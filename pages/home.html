@@ -2,8 +2,10 @@
      renders of the 3D mark (assets/brand/). hero-loader.js progressively loads the 3D mark inside
      [data-hero], and site.js steps its four tabs; without them the still and captions show.
      The ticker, the receipt, the example task and the app vignettes are invented examples, written
-     to be recognized, not measured. The founder section is the exception: its figures come from
-     SwarmUp's own queue (`swarmup report --days 30`); update them with the founder page. -->
+     to be recognized, not measured. The loop's screenshots (shots/) are the tool's README
+     screenshots at 1200 px as WebP: a demo shop with invented tasks (see README.md). The founder
+     section is the exception: its figures come from SwarmUp's own queue
+     (`swarmup report --days 30`); update them with the founder page. -->
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
@@ -318,8 +320,8 @@
         <p class="num">04 Ship</p>
         <h3>Your tests decide</h3>
         <p>
-          The orchestrator rebases approved work and runs your checks. Green merges. Red goes back
-          to the owner with the log.
+          The orchestrator rebases approved work, runs your checks and the task’s own “done when”
+          list. Green merges. Red goes back to the owner with the log.
         </p>
       </li>
     </ol>
@@ -328,7 +330,80 @@
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>03</b> The team</p>
+    <p class="label"><b>03</b> The loop</p>
+    <div class="head-row">
+      <h2><span>Every run gets a score.</span> <span>You decide what changes.</span></h2>
+      <p class="sub">
+        The team lives in your repo as files: roles, workflows, schedules, checks. SwarmUp scores
+        the work against them, turns failures into proposed edits, and replays real tasks to show an
+        edit helped. Nothing changes until you promote it.
+      </p>
+    </div>
+    <div class="loop" data-reveal>
+      <figure class="shot">
+        <p class="shot-bar"><span>01 Define</span><span>Workflows</span></p>
+        <img
+          src="shots/workflows.webp"
+          alt="The Workflows view: a bug fix, a campaign launch and a feature, each with its stages in a row and gates marked"
+          width="1200"
+          height="720"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Workflows in git.</strong> A feature, a bug fix or a launch runs the same stages
+          every time. A gate stops it until you say yes.
+        </figcaption>
+      </figure>
+      <figure class="shot">
+        <p class="shot-bar"><span>02 Score</span><span>Breakdown</span></p>
+        <img
+          src="shots/breakdown.webp"
+          alt="A score breakdown: review rounds for codex:engineer, one task failing with two rounds and one passing with one"
+          width="1200"
+          height="720"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Scores with receipts.</strong> Review rounds, criteria passed, cost per merged
+          task. Click any number for the tasks behind it, worst first.
+        </figcaption>
+      </figure>
+      <figure class="shot">
+        <p class="shot-bar"><span>03 Improve</span><span>Proposals</span></p>
+        <img
+          src="shots/proposals.webp"
+          alt="A proposed change to the codex:engineer role file, shown as a diff with Promote and Reject buttons"
+          width="1200"
+          height="720"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Failures become proposals.</strong> The improver drafts a change to the agent’s
+          role file. You read the diff, then promote or reject it.
+        </figcaption>
+      </figure>
+      <figure class="shot">
+        <p class="shot-bar"><span>04 Prove</span><span>Benchmarks</span></p>
+        <img
+          src="shots/benchmark.webp"
+          alt="A finished benchmark run: pass rate, estimated cost, nine attempts and the pass-rate spread over repeats"
+          width="1200"
+          height="720"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Proof before promote.</strong> Benchmarks replay real tasks against the change,
+          with pass rate, cost and how much repeats vary.
+        </figcaption>
+      </figure>
+    </div>
+    <p class="fine">Screenshots of the app on a demo shop. The tasks and numbers are invented.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="label"><b>04</b> The team</p>
     <div class="head-row">
       <h2><span>Four seats.</span> <span>One of them is yours.</span></h2>
       <p class="sub">
@@ -402,7 +477,7 @@
 
 <section class="section tint">
   <div class="wrap">
-    <p class="label"><b>04</b> What you install</p>
+    <p class="label"><b>05</b> What you install</p>
     <h2><span>Three parts.</span> <span>All on your machine.</span></h2>
     <div class="parts" data-reveal>
       <div>
@@ -418,16 +493,16 @@
         <h3>The orchestrator</h3>
         <p>
           A background process. It wakes the right agent when work is ready, caps runs by time,
-          tokens and your plan’s allowance, stops what hangs, and merges approved work after your
-          tests pass.
+          tokens and your plan’s allowance, stops what hangs, scores every run, and merges approved
+          work after your tests pass.
         </p>
       </div>
       <div>
         <p class="tag">the desktop app</p>
         <h3>The control room</h3>
         <p>
-          An inbox with only what needs you. A board, a thread per task, live runs with logs and
-          token counts, schedules, channels and a chat with the PM agent. The tray icon pauses the
+          An inbox with only what needs you. A board, a thread per task, live runs, workflows,
+          scores, benchmarks, the project map and a chat with the PM agent. The tray icon pauses the
           whole floor.
         </p>
       </div>
@@ -585,7 +660,7 @@
       </figure>
     </div>
     <div>
-      <p class="label"><b>05</b> The bill</p>
+      <p class="label"><b>06</b> The bill</p>
       <h2>Work you didn’t do, itemized.</h2>
       <p class="sub">
         The interesting lines are the zeros. Nobody asked you to confirm the obvious, nobody needed
@@ -604,7 +679,7 @@
 <section class="section tint">
   <div class="wrap file-grid">
     <div>
-      <p class="label"><b>06</b> Plain files</p>
+      <p class="label"><b>07</b> Plain files</p>
       <h2><span>No database.</span> <span>A folder.</span></h2>
       <p class="sub">
         Every task is a folder in your repo: one <code>task.md</code>, plus one Markdown file per
@@ -682,7 +757,7 @@ tests and the forty old ones. All green.</code></pre>
 
 <section class="section ink">
   <div class="wrap">
-    <p class="label"><b>07</b> House rules</p>
+    <p class="label"><b>08</b> House rules</p>
     <div class="head-row">
       <h2><span>Six rules.</span> <span>No exceptions for the talented.</span></h2>
       <p class="sub">
@@ -705,7 +780,8 @@ tests and the forty old ones. All green.</code></pre>
       </li>
       <li>
         <strong>Your calls stay yours</strong>
-        Money, accounts, publishing and deletes wait for your answer. The team settles the rest.
+        Gates, publishing, money, accounts and deletes wait for your answer. So does any change to
+        how an agent works.
       </li>
       <li>
         <strong>One worktree per task</strong>
@@ -722,7 +798,7 @@ tests and the forty old ones. All green.</code></pre>
 <section class="section" id="founder">
   <div class="wrap founder-grid">
     <div class="founder-copy">
-      <p class="label"><b>08</b> Who built this</p>
+      <p class="label"><b>09</b> Who built this</p>
       <h2>One human on the payroll.</h2>
       <p class="first">
         I’m Dawid. I’ve spent 20 years in performance marketing, which trains one habit above all
@@ -757,7 +833,7 @@ tests and the forty old ones. All green.</code></pre>
 
 <section class="section tint">
   <div class="wrap">
-    <p class="label"><b>09</b> Roadmap</p>
+    <p class="label"><b>10</b> Roadmap</p>
     <div class="head-row">
       <h2>Shipped, fresh, planned.</h2>
       <p class="sub">
@@ -771,50 +847,49 @@ tests and the forty old ones. All green.</code></pre>
         <h3>In your hands</h3>
         <ul>
           <li>One installer for the app, the orchestrator and the CLI. They update together.</li>
-          <li>Repeating tasks: daily, weekly, or whenever another task closes.</li>
-          <li>Work without an owner finds one by role, within a tick.</li>
-          <li>Search across tasks, threads, notes and votes.</li>
+          <li>Milestones: approve one plan, and the PM breaks it into tasks.</li>
+          <li>A decision log that agents read before they plan.</li>
+          <li>
+            A “done when” on every task: commands, file checks, word counts, rubrics, questions for
+            you.
+          </li>
+          <li>Campaigns and blogs from a template, with an editor and checks for writing.</li>
         </ul>
       </div>
       <div style="--dot: var(--acid)">
-        <p class="when">New in 0.2.0-beta.8</p>
+        <p class="when">New since 0.3.0-beta.19</p>
         <h3>Fresh</h3>
         <ul>
+          <li>Workflows with gates: a feature, a fix or a launch runs the same way every time.</li>
           <li>
-            Replay: your project’s history as swimlanes, a metro map and review rallies, recorded as
-            MP4.
+            Schedules, merge checks and webhooks kept in git. They fire only where you trust them.
           </li>
-          <li>A worktree per task, so engineers work side by side.</li>
-          <li>Only crucial decisions reach you. Agents’ questions go to the PM agent first.</li>
           <li>
-            One-click answers: the agent says what it would pick, and the inbox shows what your
-            answer unblocks.
+            Every score opens the tasks behind it. Failing ones turn into proposed role changes.
           </li>
+          <li>
+            Benchmarks with cost caps and history, and trials of a change on part of the work.
+          </li>
+          <li>Publish from the app through your own adapter, after a preview.</li>
         </ul>
       </div>
       <div>
         <p class="when">Designed, not built</p>
         <h3>Planned</h3>
         <ul>
-          <li>
-            Milestones: approve one plan, and the PM breaks it into tasks. QA checks the goal before
-            the milestone closes.
-          </li>
-          <li>
-            A decision log that agents read before they plan, so a contradiction reaches you as one
-            line.
-          </li>
-          <li>More providers: Grok, Gemini and Jev.</li>
+          <li>Run artifacts kept with the run that made them.</li>
+          <li>Measure what the project map saves: agent orientation before and after.</li>
+          <li>Snapshots of work done in an external editor.</li>
+          <li>A signed installer, so Windows stops asking.</li>
+          <li>Desktop builds for macOS and Linux.</li>
         </ul>
       </div>
       <div>
         <p class="when">Ideas</p>
         <h3>On the bench</h3>
         <ul>
-          <li>Approval gates for risky actions.</li>
+          <li>More providers: Grok, Gemini and Jev.</li>
           <li>A cloud fallback for when your PC is off.</li>
-          <li>A diff view in the task panel.</li>
-          <li>A machine-checkable “done” on every task, and stop rules for loops going nowhere.</li>
         </ul>
       </div>
     </div>
@@ -823,7 +898,7 @@ tests and the forty old ones. All green.</code></pre>
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>10</b> Install</p>
+    <p class="label"><b>11</b> Install</p>
     <div class="head-row">
       <h2>Fifteen minutes to your first task.</h2>
       <p class="sub"><a class="arrow" href="install.html">Read the full install guide</a></p>
@@ -848,7 +923,7 @@ tests and the forty old ones. All green.</code></pre>
 
 <section class="section">
   <div class="wrap">
-    <p class="label"><b>11</b> Questions</p>
+    <p class="label"><b>12</b> Questions</p>
     <h2>Fair questions.</h2>
     <dl class="faq">
       <div>
@@ -863,6 +938,15 @@ tests and the forty old ones. All green.</code></pre>
         <dd>
           No agent starts on its own until you turn on wake for it. Every run has a time budget, the
           orchestrator caps how many run at once, and it pauses at the share of your plan you set.
+          Schedules and webhooks kept in git fire on your PC only after you approve the exact set.
+        </dd>
+      </div>
+      <div>
+        <dt>Is it only for code?</dt>
+        <dd>
+          No. Start a blog or a campaign from a template: a brand voice, a claims file every post
+          must cite, an editor that reviews each draft, and checks such as 280 characters per post.
+          Agents draft. Only you publish.
         </dd>
       </div>
       <div>
